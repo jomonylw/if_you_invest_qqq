@@ -1,0 +1,14 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("MYSQL_URL")
+}
+
+model Price {
+  date  DateTime @id @db.Date
+  close Decimal @db.Decimal(10, 2)
+  div   Decimal? @db.Decimal(10, 5)
+}
