@@ -50,16 +50,17 @@ export default function Home() {
             maxPctValue = 0.01;
           }
 
+          // New logic for symmetrical yMinPct and yMaxPct to center 0%
           let yMinPct, yMaxPct;
-          const pctRange = maxPctValue - minPctValue;
+          const absoluteMaxPct = Math.max(Math.abs(minPctValue), Math.abs(maxPctValue));
 
-          if (pctRange === 0) {
-            // Handle cases where all data points are the same
-            yMinPct = minPctValue === 0 ? -0.01 : minPctValue - Math.abs(minPctValue * 0.1);
-            yMaxPct = maxPctValue === 0 ? 0.01 : maxPctValue + Math.abs(maxPctValue * 0.1);
+          if (absoluteMaxPct === 0) {
+            // Handles case where all pcts are 0 or pcts is empty and defaults led to 0
+            yMinPct = -0.01; // Default small range if all values are zero
+            yMaxPct = 0.01;
           } else {
-            yMinPct = minPctValue - pctRange * 0.05; // Add 5% padding below min
-            yMaxPct = maxPctValue + pctRange * 0.05; // Add 5% padding above max
+            yMaxPct = absoluteMaxPct * 1.1; // Add 10% padding
+            yMinPct = -absoluteMaxPct * 1.1; // Add 10% padding, symmetrical
           }
           setChartOption({
             tooltip: {
@@ -131,6 +132,9 @@ export default function Home() {
                   formatter: function (value: number) {
                     return (value * 100).toFixed(2) + ' %';
                   }
+                },
+                splitLine: { // Ensure 0% grid line is visible if it's a tick
+                  show: true
                 }
               }
             ],
