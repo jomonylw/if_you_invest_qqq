@@ -73,6 +73,7 @@ export default function Home() {
               }
             },
             toolbox: {
+              show: false, // Hide the toolbox
               feature: {
                 dataView: { show: true, readOnly: false },
                 magicType: { show: true, type: ['line', 'bar'] },
@@ -81,7 +82,7 @@ export default function Home() {
               }
             },
             legend: {
-              data: ['Close Price', 'Change Pct']
+              data: ['Close Price', 'Change Percent']
             },
             dataZoom: [
               {
@@ -120,17 +121,58 @@ export default function Home() {
                 },
                 axisLabel: {
                   formatter: '${value}'
+                },
+                axisPointer: {
+                  label: {
+                    formatter: function (params: { value: number | string | Date }) {
+                      let numericValue: number | undefined;
+                      if (typeof params.value === 'number') {
+                        numericValue = params.value;
+                      } else if (typeof params.value === 'string') {
+                        const parsed = parseFloat(params.value);
+                        if (!isNaN(parsed)) {
+                          numericValue = parsed;
+                        }
+                      }
+                      // For 'Price' axis, we expect a number.
+                      if (numericValue !== undefined) {
+                        return '$ ' + numericValue.toFixed(2);
+                      }
+                      return String(params.value); // Fallback
+                    }
+                  }
                 }
               },
               {
                 type: 'value',
-                name: 'Change Pct',
+                name: 'Change Percent',
                 alignTicks: true,
                 min: yMinPct,
                 max: yMaxPct,
                 axisLabel: {
                   formatter: function (value: number) {
                     return (value * 100).toFixed(2) + ' %';
+                  }
+                },
+                axisPointer: {
+                  label: {
+                    formatter: function (params: { value: number | string | Date }) {
+                      let numericValue: number | undefined;
+                      if (typeof params.value === 'number') {
+                        numericValue = params.value;
+                      } else if (typeof params.value === 'string') {
+                        const parsed = parseFloat(params.value);
+                        if (!isNaN(parsed)) {
+                          numericValue = parsed;
+                        }
+                      }
+                      // For 'Change Percent' axis, we expect a number.
+                      // Date type is included for type compatibility but shouldn't occur for this specific axis.
+                      if (numericValue !== undefined) {
+                        return (numericValue * 100).toFixed(2) + ' %';
+                      }
+                      return String(params.value); // Fallback
+                    }
                   }
                 },
                 splitLine: { // Ensure 0% grid line is visible if it's a tick
@@ -167,7 +209,7 @@ export default function Home() {
                 data: closes
               },
               {
-                name: 'Change Pct',
+                name: 'Change Percent',
                 type: 'bar',
                 yAxisIndex: 1,
                 tooltip: {
