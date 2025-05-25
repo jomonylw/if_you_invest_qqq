@@ -36,6 +36,31 @@ export default function Home() {
             }
           }));
 
+// Calculate min and max for Pct Y-axis
+          let minPctValue = Infinity;
+          let maxPctValue = -Infinity;
+          if (pcts.length > 0) {
+            pcts.forEach(p => {
+              if (p.value < minPctValue) minPctValue = p.value;
+              if (p.value > maxPctValue) maxPctValue = p.value;
+            });
+          } else {
+            // Default values if pcts is empty
+            minPctValue = -0.01;
+            maxPctValue = 0.01;
+          }
+
+          let yMinPct, yMaxPct;
+          const pctRange = maxPctValue - minPctValue;
+
+          if (pctRange === 0) {
+            // Handle cases where all data points are the same
+            yMinPct = minPctValue === 0 ? -0.01 : minPctValue - Math.abs(minPctValue * 0.1);
+            yMaxPct = maxPctValue === 0 ? 0.01 : maxPctValue + Math.abs(maxPctValue * 0.1);
+          } else {
+            yMinPct = minPctValue - pctRange * 0.05; // Add 5% padding below min
+            yMaxPct = maxPctValue + pctRange * 0.05; // Add 5% padding above max
+          }
           setChartOption({
             tooltip: {
               trigger: 'axis',
@@ -99,14 +124,13 @@ export default function Home() {
               {
                 type: 'value',
                 name: 'Change Pct',
-                min: function (value: { min: number; }) {
-                    return Math.floor(value.min * 1.2);
-                },
-                max: function (value: { max: number; }) {
-                    return Math.ceil(value.max * 1.2);
-                },
+                alignTicks: true,
+                min: yMinPct,
+                max: yMaxPct,
                 axisLabel: {
-                  formatter: '{value} %'
+                  formatter: function (value: number) {
+                    return (value * 100).toFixed(2) + ' %';
+                  }
                 }
               }
             ],
