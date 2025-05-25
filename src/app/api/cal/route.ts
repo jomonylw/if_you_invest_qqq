@@ -46,9 +46,9 @@ function calculateInvestmentGrowth(
   includeDividends: boolean,
   returnMonthlyBreakdown: boolean = false // 新增参数，控制是否返回月度明细
 ) {
-  if (returnMonthlyBreakdown) {
-    console.log(`CIG_DEBUG: Entry. priceData[0]?.date: ${priceData[0]?.date}, initialInvestment: ${initialInvestment}, monthlyAmtParam: ${monthlyInvestmentAmount}, monthlyDateParam: ${monthlyInvestmentDate}`);
-  }
+  // if (returnMonthlyBreakdown) {
+  //   console.log(`CIG_DEBUG: Entry. priceData[0]?.date: ${priceData[0]?.date}, initialInvestment: ${initialInvestment}, monthlyAmtParam: ${monthlyInvestmentAmount}, monthlyDateParam: ${monthlyInvestmentDate}`);
+  // }
   let cig_iteration_logger_count = 0; // Logger for first iteration details
 
   const firstPrice = priceData[0].close.toNumber();
@@ -73,9 +73,9 @@ function calculateInvestmentGrowth(
   let cumulativeDividendOriginalAmount = 0;
   let cumulativeDividendReinvestedShares = 0;
 
-  if (returnMonthlyBreakdown) {
-    console.log(`CIG_DEBUG: Before loop. cumulativeMonthlyInv: ${cumulativeMonthlyInvestmentOriginalAmount}, cumulativeDiv: ${cumulativeDividendOriginalAmount}`);
-  }
+  // if (returnMonthlyBreakdown) {
+  //   console.log(`CIG_DEBUG: Before loop. cumulativeMonthlyInv: ${cumulativeMonthlyInvestmentOriginalAmount}, cumulativeDiv: ${cumulativeDividendOriginalAmount}`);
+  // }
 
   for (const dateStr of allDates) {
     const data = priceDataMap.get(dateStr);
@@ -86,10 +86,10 @@ function calculateInvestmentGrowth(
     const currentDate = new Date(dateStr);
     const monthKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}`; // Still needed for monthlyInvestmentTracker
 
-    if (returnMonthlyBreakdown && cig_iteration_logger_count === 0) {
-      console.log(`CIG_DEBUG: Loop iter 0. currentDate: ${currentDate.toISOString()}, dateStr: ${dateStr}`);
-      console.log(`CIG_DEBUG: Loop iter 0. Before monthly inv logic. cumulativeMonthlyInv: ${cumulativeMonthlyInvestmentOriginalAmount}`);
-    }
+    // if (returnMonthlyBreakdown && cig_iteration_logger_count === 0) {
+    //   console.log(`CIG_DEBUG: Loop iter 0. currentDate: ${currentDate.toISOString()}, dateStr: ${dateStr}`);
+    //   console.log(`CIG_DEBUG: Loop iter 0. Before monthly inv logic. cumulativeMonthlyInv: ${cumulativeMonthlyInvestmentOriginalAmount}`);
+    // }
 
 
     // Monthly investment logic
@@ -109,9 +109,9 @@ function calculateInvestmentGrowth(
             firstDate.getDate() === monthlyInvestmentDate) { // Check if the day of the first data point matches the monthly investment day
             performMonthlyInvestment = false;
         }
-        if (returnMonthlyBreakdown && cig_iteration_logger_count === 0) {
-          console.log(`CIG_DEBUG: Loop iter 0. performMonthlyInvestment: ${performMonthlyInvestment}`);
-        }
+        // if (returnMonthlyBreakdown && cig_iteration_logger_count === 0) {
+        //   console.log(`CIG_DEBUG: Loop iter 0. performMonthlyInvestment: ${performMonthlyInvestment}`);
+        // }
 
         if (performMonthlyInvestment) {
           const sharesBought = monthlyInvestmentAmount / currentPrice;
@@ -121,15 +121,15 @@ function calculateInvestmentGrowth(
           totalInvested += monthlyInvestmentAmount;
           monthlyInvestmentTracker[monthKey] = true;
         }
-        if (returnMonthlyBreakdown && cig_iteration_logger_count === 0) {
-          console.log(`CIG_DEBUG: Loop iter 0. After monthly inv logic. cumulativeMonthlyInv: ${cumulativeMonthlyInvestmentOriginalAmount}`);
-        }
+        // if (returnMonthlyBreakdown && cig_iteration_logger_count === 0) {
+        //   console.log(`CIG_DEBUG: Loop iter 0. After monthly inv logic. cumulativeMonthlyInv: ${cumulativeMonthlyInvestmentOriginalAmount}`);
+        // }
       }
     }
 
-    if (returnMonthlyBreakdown && cig_iteration_logger_count === 0) {
-      console.log(`CIG_DEBUG: Loop iter 0. Before div logic. cumulativeDiv: ${cumulativeDividendOriginalAmount}, today's raw dividend value: ${dividend}`);
-    }
+    // if (returnMonthlyBreakdown && cig_iteration_logger_count === 0) {
+    //   console.log(`CIG_DEBUG: Loop iter 0. Before div logic. cumulativeDiv: ${cumulativeDividendOriginalAmount}, today's raw dividend value: ${dividend}`);
+    // }
     // Dividend reinvestment logic
     // 股息计算应基于当日投资（如果发生）*之后*的持股数
     const sharesBeforeDividend = currentShares; // 用于计算当日股息的基数
@@ -140,15 +140,15 @@ function calculateInvestmentGrowth(
       cumulativeDividendReinvestedShares += newSharesFromDividend; // 使用累计变量
       cumulativeDividendOriginalAmount += dividendIncome; // 使用累计变量
     }
-    if (returnMonthlyBreakdown && cig_iteration_logger_count === 0) {
-      console.log(`CIG_DEBUG: Loop iter 0. After div logic. cumulativeDiv: ${cumulativeDividendOriginalAmount}`);
-    }
+    // if (returnMonthlyBreakdown && cig_iteration_logger_count === 0) {
+    //   console.log(`CIG_DEBUG: Loop iter 0. After div logic. cumulativeDiv: ${cumulativeDividendOriginalAmount}`);
+    // }
 
     // Daily breakdown logic
     if (returnMonthlyBreakdown) {
-      if (cig_iteration_logger_count === 0) {
-        console.log(`CIG_DEBUG: Loop iter 0. Before push. monthlyAmountToPush: ${cumulativeMonthlyInvestmentOriginalAmount}, dividendAmountToPush: ${cumulativeDividendOriginalAmount}`);
-      }
+      // if (cig_iteration_logger_count === 0) {
+      //   console.log(`CIG_DEBUG: Loop iter 0. Before push. monthlyAmountToPush: ${cumulativeMonthlyInvestmentOriginalAmount}, dividendAmountToPush: ${cumulativeDividendOriginalAmount}`);
+      // }
       const initialInvestmentValue = initialInvestmentShares * currentPrice;
       const initialInvestmentReturn = initialInvestmentValue - initialInvestmentOriginalAmount;
 
