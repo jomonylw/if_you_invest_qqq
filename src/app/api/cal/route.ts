@@ -225,7 +225,7 @@ export async function GET(request: Request) {
     const priceData = await getPriceData(startDateParam || undefined, endDateParam || undefined);
 
     if (!priceData || priceData.length === 0) {
-      return NextResponse.json({ error: 'No price data available for the given dates.' }, { status: 404 });
+      return NextResponse.json({ success: false, err: 'No price data available for the given dates.' }, { status: 404 });
     }
 
     const firstPrice = priceData[0].close.toNumber();
@@ -262,25 +262,24 @@ export async function GET(request: Request) {
     const annualizedTotalReturn = years > 0 ? Math.pow(1 + nominalTotalReturn, 1 / years) - 1 : 0;
 
     return NextResponse.json({
-      nominalPriceReturn: nominalPriceReturn.toFixed(4),
-      annualizedPriceReturn: annualizedPriceReturn.toFixed(4),
-      nominalPriceReturnWithDividends: nominalPriceReturnWithDividends.toFixed(4),
-      annualizedPriceReturnWithDividends: annualizedPriceReturnWithDividends.toFixed(4),
-      // ---
-      totalInvested: totalInvested.toFixed(4),
-      // ---
-      nominalTotalReturnWithoutDividends: nominalTotalReturnWithoutDividends.toFixed(4),
-      annualizedTotalReturnWithoutDividends: annualizedTotalReturnWithoutDividends.toFixed(4),
-      investmentGrewToPrice: investmentGrewToPrice.toFixed(4),
-      // ---
-      nominalTotalReturn: nominalTotalReturn.toFixed(4),
-      annualizedTotalReturn: annualizedTotalReturn.toFixed(4),
-      investmentGrewToTotalReturn: investmentGrewToTotalReturn.toFixed(4),
-      // ---
-      monthlyBreakdown: monthlyBreakdown, // 添加月度明细
+      success: true,
+      data: {
+        nominalPriceReturn: nominalPriceReturn.toFixed(4),
+        annualizedPriceReturn: annualizedPriceReturn.toFixed(4),
+        nominalPriceReturnWithDividends: nominalPriceReturnWithDividends.toFixed(4),
+        annualizedPriceReturnWithDividends: annualizedPriceReturnWithDividends.toFixed(4),
+        totalInvested: totalInvested.toFixed(4),
+        nominalTotalReturnWithoutDividends: nominalTotalReturnWithoutDividends.toFixed(4),
+        annualizedTotalReturnWithoutDividends: annualizedTotalReturnWithoutDividends.toFixed(4),
+        investmentGrewToPrice: investmentGrewToPrice.toFixed(4),
+        nominalTotalReturn: nominalTotalReturn.toFixed(4),
+        annualizedTotalReturn: annualizedTotalReturn.toFixed(4),
+        investmentGrewToTotalReturn: investmentGrewToTotalReturn.toFixed(4),
+        monthlyBreakdown: monthlyBreakdown,
+      }
     });
   } catch (error) {
     console.error('Error in /api/cal:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ success: false, err: 'Internal Server Error' }, { status: 500 });
   }
 }

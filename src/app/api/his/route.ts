@@ -13,7 +13,7 @@ export async function GET() {
     const allPriceData = await getPriceData(); // 获取所有历史数据
 
     if (!allPriceData || allPriceData.length === 0) {
-      return NextResponse.json({ message: 'No price data available' }, { status: 404 });
+      return NextResponse.json({ success: false, err: 'No price data available' }, { status: 404 });
     }
 
     const monthlyResults: MonthlyData[] = [];
@@ -61,9 +61,9 @@ export async function GET() {
       lastMonthClose = endOfMonthClose;
     }
 
-    return NextResponse.json(monthlyResults);
+    return NextResponse.json({ success: true, data: monthlyResults });
   } catch (error) {
     console.error('Error fetching or processing historical data:', error);
-    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ success: false, err: 'Internal server error' }, { status: 500 });
   }
 }
