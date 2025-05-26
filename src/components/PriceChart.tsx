@@ -5,6 +5,13 @@ import type { EChartsOption, DataZoomComponentOption } from 'echarts';
 import { format, parseISO, lastDayOfMonth, subMonths, isLastDayOfMonth } from 'date-fns';
 import type { HisData, DataZoomEventParamsDetail, DataZoomEventParams, PriceChartProps } from '../types';
 
+const formatCurrency = (value: number | undefined | null): string => {
+  if (value === undefined || value === null) {
+    return '';
+  }
+  return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' }).replace(/^\$/, '');
+};
+
 export default function PriceChart({ calFormStartDate, calFormEndDate, onDatesChange }: PriceChartProps) {
   const [chartOption, setChartOption] = useState<EChartsOption | null>(null);
   const [allDates, setAllDates] = useState<string[]>([]);
@@ -138,7 +145,9 @@ export default function PriceChart({ calFormStartDate, calFormEndDate, onDatesCh
                     return Math.ceil(value.max * 1.05);
                 },
                 axisLabel: {
-                  formatter: '${value}'
+                  formatter: function (value: number) {
+                    return '$ ' + formatCurrency(value);
+                  }
                 },
                 axisPointer: {
                   label: {
@@ -153,7 +162,7 @@ export default function PriceChart({ calFormStartDate, calFormEndDate, onDatesCh
                         }
                       }
                       if (numericValue !== undefined) {
-                        return '$ ' + numericValue.toFixed(2);
+                        return '$ ' + formatCurrency(numericValue);
                       }
                       return String(params.value);
                     }
@@ -205,8 +214,13 @@ export default function PriceChart({ calFormStartDate, calFormEndDate, onDatesCh
                   valueFormatter: function (value: (string | number | Date | null | undefined) | (string | number | Date | null | undefined)[]) {
                     if (value === undefined || value === null) return '';
                     if (Array.isArray(value)) {
-                        if (value.length > 1 && typeof value[1] === 'number') {
-                            return '$' + value[1].toFixed(2);
+                        // Assuming the price is the second element for 'line' series in a grouped tooltip, or the first if not grouped.
+                        // For simplicity, let's assume the relevant number is directly passed or is the primary numeric value.
+                        // This part might need adjustment based on how ECharts passes array values for your specific chart type.
+                        // If 'value' is an array like [seriesName, dataValue, ...], then value[1] might be correct.
+                        const numericEntry = value.find(v => typeof v === 'number') as number | undefined;
+                        if (numericEntry !== undefined) {
+                          return '$ ' + formatCurrency(numericEntry);
                         }
                         return value.map(v => String(v)).join(', ');
                     }
@@ -214,7 +228,7 @@ export default function PriceChart({ calFormStartDate, calFormEndDate, onDatesCh
                         return value.toLocaleString();
                     }
                     if (typeof value === 'number') {
-                      return '$' + value.toFixed(2);
+                      return '$ ' + formatCurrency(value);
                     }
                     return String(value);
                   }

@@ -1,5 +1,5 @@
 "use client";
-import { Card, CardContent, Typography, Grid } from '@mui/material';
+import { Card, CardContent, Typography } from '@mui/material';
 import ReactECharts from 'echarts-for-react';
 import type { InvestmentResultsChartProps, MonthlyBreakdownItem } from '../types';
 
@@ -24,7 +24,8 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
   };
 
   const formatCurrency = (value: string) => {
-    return `$${parseFloat(value).toFixed(2)}`;
+    const num = parseFloat(value);
+    return `$${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
   const chartOption = {
@@ -35,6 +36,14 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
         crossStyle: {
           color: '#999'
         }
+      },
+      formatter: function (params: { name: string; marker: string; seriesName: string; value: string | number }[]) {
+        let result = params[0].name + '<br/>';
+        params.forEach(function (item: { marker: string; seriesName: string; value: string | number }) {
+          const val = parseFloat(String(item.value));
+          result += item.marker + item.seriesName + ': $' + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '<br/>';
+        });
+        return result;
       }
     },
     legend: {
@@ -61,7 +70,14 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
         type: 'value',
         name: 'Amount', // Changed name for clarity
         axisLabel: {
-          formatter: '${value}'
+          formatter: (value: number) => `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+        },
+        axisPointer: {
+          label: {
+            formatter: function (params: { value: number }) {
+              return `$${params.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            }
+          }
         }
       }
     ],
@@ -83,7 +99,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
         type: 'bar',
         stack: 'total',
         itemStyle: {
-          color: '#91CC75' // Color 1 - similar
+          color: 'rgba(84, 112, 198, 0.5)' // Color 1 (70% transparent)
         },
         emphasis: {
           focus: 'series'
@@ -95,7 +111,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
         type: 'bar',
         stack: 'total',
         itemStyle: {
-          color: '#FAC858' // Color 2
+          color: '#91CC75' // Color 2
         },
         emphasis: {
           focus: 'series'
@@ -107,7 +123,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
         type: 'bar',
         stack: 'total',
         itemStyle: {
-          color: '#EE6666' // Color 2 - similar
+          color: 'rgba(145, 204, 117, 0.5)' // Color 2 (70% transparent)
         },
         emphasis: {
           focus: 'series'
@@ -119,7 +135,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
         type: 'bar',
         stack: 'total',
         itemStyle: {
-          color: '#73C0DE' // Color 3
+          color: '#FAC858' // Color 3
         },
         emphasis: {
           focus: 'series'
@@ -131,7 +147,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
         type: 'bar',
         stack: 'total',
         itemStyle: {
-          color: '#3BA272' // Color 3 - similar
+          color: 'rgba(250, 200, 88, 0.5)' // Color 3 (70% transparent)
         },
         emphasis: {
           focus: 'series'
@@ -144,81 +160,87 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
   return (
     <Card className="mt-6">
       <CardContent>
-        <Typography variant="h6" gutterBottom>Calculation Results:</Typography>
-        <Grid container spacing={2} className="mb-4" direction="column">
+        <h2 className="text-xl font-semibold mb-4 text-center pt-5">Calculation Results</h2>
+        <div className="flex flex-col gap-4 mb-4"> {/* Main container. spacing={2} -> gap-4 (16px), direction="column" -> flex-col */}
           {/* Price Returns Group */}
-          <Grid item xs={12}>
+          <div className="w-full"> {/* Corresponds to Grid item xs={12} */}
             <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>Price Returns</Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6} md={3}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4"> {/* container spacing={2} -> gap-4. md={3} items -> 2x2 grid */}
+              <div> {/* item xs={12} sm={6} md={3} */}
                 <Typography variant="body2">Nominal Price Return:</Typography>
                 <Typography variant="h6">{formatPercentage(nominalPriceReturn)}</Typography>
-              </Grid>
-              <Grid item xs={12} sm={6} md={3}>
+              </div>
+              <div> {/* item xs={12} sm={6} md={3} */}
                 <Typography variant="body2">Annualized Price Return:</Typography>
                 <Typography variant="h6">{formatPercentage(annualizedPriceReturn)}</Typography>
-              </Grid>
-              <Grid item xs={12} sm={6} md={3}>
-                <Typography variant="body2">Nominal Price Return (w/ Dividends):</Typography>
+              </div>
+              <div> {/* item xs={12} sm={6} md={3} */}
+                <Typography variant="body2">
+                  Nominal Price Return <br />
+                  (Including Dividends)
+                </Typography>
                 <Typography variant="h6">{formatPercentage(nominalPriceReturnWithDividends)}</Typography>
-              </Grid>
-              <Grid item xs={12} sm={6} md={3}>
-                <Typography variant="body2">Annualized Price Return (w/ Dividends):</Typography>
+              </div>
+              <div> {/* item xs={12} sm={6} md={3} */}
+                <Typography variant="body2">
+                  Annualized Price Return <br />
+                  (Including Dividends)
+                </Typography>
                 <Typography variant="h6">{formatPercentage(annualizedPriceReturnWithDividends)}</Typography>
-              </Grid>
-            </Grid>
-          </Grid>
+              </div>
+            </div>
+          </div>
 
           {/* Total Invested Group - 单独一行 */}
-          <Grid item xs={12} sx={{ mt: 2 }}>
+          <div className="w-full mt-4"> {/* item xs={12}, sx={{ mt: 2 }} -> mt-4 */}
             <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>Investment Summary</Typography>
-            <Grid container>
-                <Grid item xs={12} sm={6} md={4}>
+            <div> {/* Replaces <Grid container> for single item layout */}
+                <div className="w-full sm:w-1/2 md:w-1/3"> {/* Replaces <Grid item xs={12} sm={6} md={4}> */}
                     <Typography variant="body2">Total Invested:</Typography>
                     <Typography variant="h6">{formatCurrency(totalInvested)}</Typography>
-                </Grid>
-            </Grid>
-          </Grid>
+                </div>
+            </div>
+          </div>
 
           {/* Total Returns Group (Without Dividends) */}
-          <Grid item xs={12} sx={{ mt: 2 }}>
+          <div className="w-full mt-4"> {/* item xs={12}, sx={{ mt: 2 }} -> mt-4 */}
             <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>Growth (Excluding Dividends)</Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6} md={4}>
-                <Typography variant="body2">Nominal Total Return (w/o Dividends):</Typography>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"> {/* container spacing={2} -> gap-4. md={4} items -> 3 cols */}
+              <div> {/* item xs={12} sm={6} md={4} */}
+                <Typography variant="body2">Nominal Total Return:</Typography>
                 <Typography variant="h6">{formatPercentage(nominalTotalReturnWithoutDividends)}</Typography>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <Typography variant="body2">Annualized Total Return (w/o Dividends):</Typography>
+              </div>
+              <div> {/* item xs={12} sm={6} md={4} */}
+                <Typography variant="body2">Annualized Total Return:</Typography>
                 <Typography variant="h6">{formatPercentage(annualizedTotalReturnWithoutDividends)}</Typography>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              </div>
+              <div> {/* item xs={12} sm={6} md={4} */}
                 <Typography variant="body2">Investment Grew To:</Typography>
                 <Typography variant="h6">{formatCurrency(investmentGrewToPrice)}</Typography>
-              </Grid>
-            </Grid>
-          </Grid>
+              </div>
+            </div>
+          </div>
 
           {/* Total Returns Group (With Dividends) */}
-          <Grid item xs={12} sx={{ mt: 2 }}>
+          <div className="w-full mt-4"> {/* item xs={12}, sx={{ mt: 2 }} -> mt-4 */}
             <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>Growth (Including Dividends)</Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6} md={4}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"> {/* container spacing={2} -> gap-4. md={4} items -> 3 cols */}
+              <div> {/* item xs={12} sm={6} md={4} */}
                 <Typography variant="body2">Nominal Total Return:</Typography>
                 <Typography variant="h6">{formatPercentage(nominalTotalReturn)}</Typography>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              </div>
+              <div> {/* item xs={12} sm={6} md={4} */}
                 <Typography variant="body2">Annualized Total Return:</Typography>
                 <Typography variant="h6">{formatPercentage(annualizedTotalReturn)}</Typography>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              </div>
+              <div> {/* item xs={12} sm={6} md={4} */}
                 <Typography variant="body2">Investment Grew To:</Typography>
                 <Typography variant="h6">{formatCurrency(investmentGrewToTotalReturn)}</Typography>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Typography variant="h6" gutterBottom className="mt-4">Monthly Breakdown Chart:</Typography>
+              </div>
+            </div>
+          </div>
+        </div>
+        <h2 className="text-xl font-semibold mb-4 text-center pt-5">Monthly Breakdown</h2>
         <ReactECharts option={chartOption} style={{ height: 400 }} />
       </CardContent>
     </Card>
