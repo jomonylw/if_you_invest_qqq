@@ -1,9 +1,13 @@
 "use client";
 import Image from "next/image";
 import ReactECharts from 'echarts-for-react';
-import { useEffect, useState } from "react";
-import type { EChartsOption } from 'echarts';
+import { useEffect, useState, useCallback } from "react";
+import type { EChartsOption, DataZoomComponentOption } from 'echarts';
 import { TextField, Button, Card, CardContent, Typography, CircularProgress, Alert } from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { format, parseISO, lastDayOfMonth, subMonths, isLastDayOfMonth } from 'date-fns';
 
 interface HisData {
   date: string;
@@ -51,6 +55,7 @@ interface CalApiResponseData {
 
 export default function Home() {
   const [chartOption, setChartOption] = useState<EChartsOption | null>(null);
+  const [allDates, setAllDates] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -78,7 +83,8 @@ export default function Home() {
         const result = await response.json();
         if (result.success && result.data) {
           const data: HisData[] = result.data;
-          const dates = data.map(item => item.date);
+          const localDates = data.map(item => item.date);
+          setAllDates(localDates);
           const closes = data.map(item => item.close);
           const pcts = data.map(item => ({
             value: item.pct,
@@ -113,6 +119,30 @@ export default function Home() {
             yMaxPct = absoluteMaxPct * 1.1; // Add 10% padding
             yMinPct = -absoluteMaxPct * 1.1; // Add 10% padding, symmetrical
           }
+
+          let initialStartPercent = 0;
+          let initialEndPercent = 100;
+
+          if (localDates.length > 0) {
+            const initialStartDateIndex = localDates.indexOf(calFormParams.start_date);
+            const initialEndDateIndex = localDates.indexOf(calFormParams.end_date);
+
+            if (initialStartDateIndex !== -1 && initialEndDateIndex !== -1 && initialStartDateIndex <= initialEndDateIndex) {
+              if (localDates.length > 1) {
+                initialStartPercent = (initialStartDateIndex / (localDates.length - 1)) * 100;
+                initialEndPercent = (initialEndDateIndex / (localDates.length - 1)) * 100;
+              } else { // localDates.length === 1
+                initialStartPercent = 0;
+                initialEndPercent = 100;
+              }
+            }
+          }
+          initialStartPercent = Math.max(0, Math.min(100, initialStartPercent));
+          initialEndPercent = Math.max(0, Math.min(100, initialEndPercent));
+          if (initialStartPercent > initialEndPercent) {
+            initialEndPercent = initialStartPercent;
+          }
+
           setChartOption({
             tooltip: {
               trigger: 'axis',
@@ -140,21 +170,22 @@ export default function Home() {
                 type: 'slider',
                 show: true,
                 xAxisIndex: [0],
-                start: 0, // 默认从头开始
-                end: 100,  // 默认显示全部
-                bottom: 10 // 距离底部的距离
+                start: initialStartPercent,
+                end: initialEndPercent,
+                bottom: 10, // 距离底部的距离
+realtime: false
               },
               {
                 type: 'inside',
                 xAxisIndex: [0],
-                start: 0,
-                end: 100
+                start: initialStartPercent,
+                end: initialEndPercent,
               }
             ],
             xAxis: [
               {
                 type: 'category',
-                data: dates,
+                data: localDates,
                 axisPointer: {
                   type: 'shadow'
                 }
@@ -302,11 +333,20 @@ export default function Home() {
     };
 
     fetchData();
-  }, []);
+  }, [calFormParams.start_date, calFormParams.end_date]); // Add dependencies to re-init chart if these change before data load
 
   const handleCalFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setCalFormParams(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleDateChange = (name: string, newValue: Date | null) => {
+    if (newValue) {
+      setCalFormParams(prev => ({ ...prev, [name]: format(newValue, 'yyyy-MM-dd') }));
+    } else {
+      // Handle case where date is cleared, perhaps set to an empty string or a default
+      setCalFormParams(prev => ({ ...prev, [name]: '' })); // Or some other logic
+    }
   };
 
   const handleCalFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -347,6 +387,206 @@ export default function Home() {
     }
   };
 
+interface DataZoomEventParamsDetail {
+  start?: number;
+  end?: number;
+  dataZoomId?: string;
+}
+
+interface DataZoomEventParams {
+  type?: 'datazoom'; // ECharts events usually have a type
+  start?: number;
+  end?: number;
+  batch?: DataZoomEventParamsDetail[];
+}
+
+const handleDataZoom = useCallback((params: DataZoomEventParams) => {
+  if (allDates.length > 0 && params) {
+    let eventDetailSource: DataZoomEventParamsDetail | null = null;
+
+    if (params.batch && params.batch.length > 0 && params.batch[0]) {
+      eventDetailSource = params.batch[0];
+    } else if (typeof params.start === 'number' && typeof params.end === 'number') {
+      eventDetailSource = params as DataZoomEventParamsDetail; // params itself has start/end
+    }
+
+    if (eventDetailSource && typeof eventDetailSource.start === 'number' && typeof eventDetailSource.end === 'number') {
+      const startPercent = eventDetailSource.start;
+      const endPercent = eventDetailSource.end;
+
+      const len = allDates.length;
+      if (len === 0) return;
+
+      const startIndex = Math.round((startPercent / 100) * (len - 1));
+      const endIndex = Math.round((endPercent / 100) * (len - 1));
+
+      // Ensure indices are valid and in correct order
+      const validStartIndex = Math.max(0, Math.min(startIndex, len - 1));
+        const validEndIndex = Math.max(0, Math.min(endIndex, len - 1));
+
+        if (allDates[validStartIndex] && allDates[validEndIndex] && validStartIndex <= validEndIndex) {
+          const newStartDate = allDates[validStartIndex];
+          const newEndDate = allDates[validEndIndex];
+
+          if (calFormParams.start_date !== newStartDate || calFormParams.end_date !== newEndDate) {
+            setCalFormParams(prev => ({
+              ...prev,
+              start_date: newStartDate,
+              end_date: newEndDate,
+            }));
+          }
+        }
+      }
+    }
+  }, [allDates, calFormParams.start_date, calFormParams.end_date]);
+
+  useEffect(() => {
+    if (allDates.length > 0 && chartOption) {
+      let effectiveZoomStartDateStr: string | undefined = undefined;
+      let effectiveZoomEndDateStr: string | undefined = undefined;
+
+      // Calculate effectiveZoomStartDateStr based on calFormParams.start_date
+      if (calFormParams.start_date) {
+        try {
+          const startDateObj = parseISO(calFormParams.start_date);
+          // Target: last day of the month PRIOR to calFormParams.start_date's month
+          const prevMonthLastDayObj = lastDayOfMonth(subMonths(startDateObj, 1));
+          const targetStart = format(prevMonthLastDayObj, 'yyyy-MM-dd');
+          
+          for (let i = allDates.length - 1; i >= 0; i--) {
+            if (allDates[i] <= targetStart) {
+              effectiveZoomStartDateStr = allDates[i];
+              break;
+            }
+          }
+          if (!effectiveZoomStartDateStr && allDates.length > 0) {
+            effectiveZoomStartDateStr = allDates[0]; // Fallback to the earliest date if no suitable date found
+          }
+        } catch (e) {
+          console.error("Error processing start_date for dataZoom sync:", e);
+          if (allDates.length > 0) effectiveZoomStartDateStr = allDates[0]; // Fallback on error
+        }
+      } else if (allDates.length > 0) {
+        effectiveZoomStartDateStr = allDates[0]; // Default if no start_date
+      }
+
+      // Calculate effectiveZoomEndDateStr based on calFormParams.end_date
+      if (calFormParams.end_date) {
+        try {
+          const endDateObj = parseISO(calFormParams.end_date);
+          // Target: last day of calFormParams.end_date's month
+          const currentMonthLastDayObj = lastDayOfMonth(endDateObj);
+          const targetEndCurrentMonth = format(currentMonthLastDayObj, 'yyyy-MM-dd');
+
+          if (allDates.includes(targetEndCurrentMonth)) {
+            effectiveZoomEndDateStr = targetEndCurrentMonth;
+          } else {
+            // Find the latest month-end in allDates that is <= calFormParams.end_date
+            for (let i = allDates.length - 1; i >= 0; i--) {
+              if (allDates[i] <= calFormParams.end_date) {
+                const d = parseISO(allDates[i]);
+                if (isLastDayOfMonth(d)) {
+                  effectiveZoomEndDateStr = allDates[i];
+                  break;
+                }
+              }
+            }
+            // Fallback if no suitable month-end found, use the latest date in allDates <= calFormParams.end_date
+            if (!effectiveZoomEndDateStr) {
+              for (let i = allDates.length - 1; i >= 0; i--) {
+                if (allDates[i] <= calFormParams.end_date) {
+                  effectiveZoomEndDateStr = allDates[i];
+                  break;
+                }
+              }
+            }
+          }
+          if (!effectiveZoomEndDateStr && allDates.length > 0) { // Further fallback
+             effectiveZoomEndDateStr = allDates[allDates.length -1];
+          }
+        } catch (e) {
+          console.error("Error processing end_date for dataZoom sync:", e);
+          if (allDates.length > 0) effectiveZoomEndDateStr = allDates[allDates.length - 1]; // Fallback on error
+        }
+      } else if (allDates.length > 0) {
+        effectiveZoomEndDateStr = allDates[allDates.length - 1]; // Default if no end_date
+      }
+      
+      // Ensure fallbacks if strings are still undefined
+      if (!effectiveZoomStartDateStr && allDates.length > 0) effectiveZoomStartDateStr = allDates[0];
+      if (!effectiveZoomEndDateStr && allDates.length > 0) effectiveZoomEndDateStr = allDates[allDates.length - 1];
+
+      if (effectiveZoomStartDateStr && effectiveZoomEndDateStr) {
+        const startDateIndex = allDates.indexOf(effectiveZoomStartDateStr);
+        const endDateIndex = allDates.indexOf(effectiveZoomEndDateStr);
+
+        if (startDateIndex !== -1 && endDateIndex !== -1 && startDateIndex <= endDateIndex) {
+          let newStartPercent: number;
+          let newEndPercent: number;
+
+          if (allDates.length > 1) {
+            newStartPercent = (startDateIndex / (allDates.length - 1)) * 100;
+            newEndPercent = (endDateIndex / (allDates.length - 1)) * 100;
+          } else { // allDates.length === 1
+            newStartPercent = 0;
+            newEndPercent = 100;
+          }
+
+          newStartPercent = Math.max(0, Math.min(100, newStartPercent));
+          newEndPercent = Math.max(0, Math.min(100, newEndPercent));
+          if (newStartPercent > newEndPercent) newEndPercent = newStartPercent;
+          
+          // Now, update the chart option if the zoom percentages have changed
+          setChartOption(prevOption => {
+            if (!prevOption || !prevOption.dataZoom) return prevOption;
+
+            const dataZoomConfig = prevOption.dataZoom;
+            const dataZoomArray: DataZoomComponentOption[] = Array.isArray(dataZoomConfig)
+              ? dataZoomConfig
+              : [dataZoomConfig];
+
+            if (dataZoomArray.length === 0) return prevOption;
+            
+            const currentSliderZoom = dataZoomArray[0];
+            const currentInsideZoom = dataZoomArray.length > 1 ? dataZoomArray[1] : undefined;
+
+            let changed = false;
+            if (currentSliderZoom && typeof currentSliderZoom.start === 'number' && typeof currentSliderZoom.end === 'number') {
+              if (Math.abs(currentSliderZoom.start - newStartPercent) > 0.01 || Math.abs(currentSliderZoom.end - newEndPercent) > 0.01) {
+                changed = true;
+              }
+            }
+            
+            if (!changed && currentInsideZoom && typeof currentInsideZoom.start === 'number' && typeof currentInsideZoom.end === 'number') {
+               if (Math.abs(currentInsideZoom.start - newStartPercent) > 0.01 || Math.abs(currentInsideZoom.end - newEndPercent) > 0.01 ) {
+                  changed = true;
+              }
+            }
+
+            if (!changed) {
+              return prevOption; // No significant change, return previous option
+            }
+            
+            const newOptionDataZoom = dataZoomArray.map((zoomItem: DataZoomComponentOption) => ({
+              ...zoomItem,
+              start: newStartPercent,
+              end: newEndPercent,
+            }));
+
+            return {
+              ...prevOption,
+              dataZoom: newOptionDataZoom,
+            };
+          });
+        }
+      }
+    }
+  }, [calFormParams.start_date, calFormParams.end_date, allDates, chartOption, setChartOption]);
+
+  const onEvents = {
+    'datazoom': handleDataZoom,
+  };
+
 
   if (loading) {
     return (
@@ -365,6 +605,7 @@ export default function Home() {
   }
 
   return (
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4 text-center">QQQ Investment Calculator</h1>
       
@@ -377,6 +618,7 @@ export default function Home() {
           style={{ height: '600px', width: '100%' }}
           notMerge={true}
           lazyUpdate={true}
+          onEvents={onEvents}
         />
       )}
       <Card className="mb-8">
@@ -386,21 +628,19 @@ export default function Home() {
           </Typography>
           <form onSubmit={handleCalFormSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <TextField
-                label="Start Date (YYYY-MM-DD)"
-                name="start_date"
-                value={calFormParams.start_date}
-                onChange={handleCalFormChange}
-                fullWidth
-                required
+              <DatePicker
+                label="Start Date"
+                value={calFormParams.start_date ? parseISO(calFormParams.start_date) : null}
+                onAccept={(newValue) => handleDateChange('start_date', newValue)}
+                format="yyyy-MM-dd"
+                slotProps={{ textField: { fullWidth: true, required: true, name: "start_date", inputProps: { readOnly: true } } }}
               />
-              <TextField
-                label="End Date (YYYY-MM-DD)"
-                name="end_date"
-                value={calFormParams.end_date}
-                onChange={handleCalFormChange}
-                fullWidth
-                required
+              <DatePicker
+                label="End Date"
+                value={calFormParams.end_date ? parseISO(calFormParams.end_date) : null}
+                onAccept={(newValue) => handleDateChange('end_date', newValue)}
+                format="yyyy-MM-dd"
+                slotProps={{ textField: { fullWidth: true, required: true, name: "end_date", inputProps: { readOnly: true } } }}
               />
               <TextField
                 label="Initial Investment ($)"
@@ -479,5 +719,6 @@ export default function Home() {
         </div>
       </footer>
     </div>
+    </LocalizationProvider>
   );
 }
