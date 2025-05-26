@@ -1,10 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useState, useCallback } from "react"; // Added useCallback
 import { TextField, Button, Card, CardContent, Typography, CircularProgress, Alert } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { format, parseISO } from 'date-fns';
 import type { InvestmentFormProps, CalApiParams } from '../types';
 import InvestmentResultsChart from './InvestmentResultsChart';
+import PriceChart from './PriceChart'; // Added PriceChart import
 
 export default function InvestmentForm({
   initialFormParams,
@@ -15,6 +16,19 @@ export default function InvestmentForm({
   onDateChangeInForm,
 }: InvestmentFormProps) {
   const [formParams, setFormParams] = useState<CalApiParams>(initialFormParams);
+
+  // Callback for when dates are changed directly in the PriceChart
+  const handleChartDatesChangeInForm = useCallback((newStartDate: string, newEndDate: string) => {
+    setFormParams(prev => ({
+      ...prev,
+      start_date: newStartDate,
+      end_date: newEndDate,
+    }));
+    // Notify the parent component (page.tsx) about these changes as well
+    // This ensures that if page.tsx relies on these dates for other purposes, it stays in sync.
+    onDateChangeInForm('start_date', newStartDate);
+    onDateChangeInForm('end_date', newEndDate);
+  }, [onDateChangeInForm, setFormParams]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -42,10 +56,16 @@ export default function InvestmentForm({
   return (
     <Card className="mb-8 mt-8">
       <CardContent>
-        <Typography variant="h5" component="div" gutterBottom>
-          Calculate Investment Growth
-        </Typography>
-        <form onSubmit={handleSubmit}>
+
+        <PriceChart
+          calFormStartDate={formParams.start_date}
+          calFormEndDate={formParams.end_date}
+          onDatesChange={handleChartDatesChangeInForm}
+        />
+
+        <h2 className="text-xl font-semibold mb-4 text-center pt-5">Calculate Investment Growth</h2>
+
+        <form onSubmit={handleSubmit} className="mt-4"> {/* Added margin top to the form for spacing */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <DatePicker
               label="Start Date"

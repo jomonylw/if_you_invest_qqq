@@ -193,7 +193,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                 <Typography variant="h6">{formatPercentage(annualizedTotalReturnWithoutDividends)}</Typography>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
-                <Typography variant="body2">Investment Grew To (Price):</Typography>
+                <Typography variant="body2">Investment Grew To:</Typography>
                 <Typography variant="h6">{formatCurrency(investmentGrewToPrice)}</Typography>
               </Grid>
             </Grid>
@@ -212,7 +212,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                 <Typography variant="h6">{formatPercentage(annualizedTotalReturn)}</Typography>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
-                <Typography variant="body2">Investment Grew To (Total Return):</Typography>
+                <Typography variant="body2">Investment Grew To:</Typography>
                 <Typography variant="h6">{formatCurrency(investmentGrewToTotalReturn)}</Typography>
               </Grid>
             </Grid>

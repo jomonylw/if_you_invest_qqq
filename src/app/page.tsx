@@ -1,7 +1,6 @@
 "use client";
-import { useState, useCallback } from "react";
+import { useState } from "react";
 // Typography, CircularProgress, Alert removed as they are handled by InvestmentForm
-import PriceChart from '@/components/PriceChart';
 import InvestmentForm from '@/components/InvestmentForm'; // Import new component
 import type { CalApiParams, CalApiResponseData } from '@/types'; // Import types
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -28,14 +27,6 @@ export default function Home() {
   const handleDateChangeInPage = (name: 'start_date' | 'end_date', dateValue: string) => {
     setCalFormParams(prev => ({ ...prev, [name]: dateValue }));
   };
-
-  const handleChartDatesChange = useCallback((newStartDate: string, newEndDate: string) => {
-    setCalFormParams(prev => ({
-      ...prev,
-      start_date: newStartDate,
-      end_date: newEndDate,
-    }));
-  }, []);
 
   const handleCalFormSubmit = async (submittedParams: CalApiParams) => {
     // event.preventDefault(); // Handled within InvestmentForm
@@ -82,12 +73,6 @@ export default function Home() {
     <LocalizationProvider dateAdapter={AdapterDateFns}>
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4 text-center">QQQ Investment Calculator</h1>
-
-      <PriceChart
-        calFormStartDate={calFormParams.start_date}
-        calFormEndDate={calFormParams.end_date}
-        onDatesChange={handleChartDatesChange}
-      />
 
       <InvestmentForm
         initialFormParams={calFormParams}
