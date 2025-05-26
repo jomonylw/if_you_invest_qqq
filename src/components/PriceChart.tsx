@@ -2,7 +2,7 @@
 import ReactECharts from 'echarts-for-react';
 import { useEffect, useState, useCallback } from "react";
 import type { EChartsOption, DataZoomComponentOption } from 'echarts';
-import { format, parseISO, lastDayOfMonth, subMonths, isLastDayOfMonth } from 'date-fns';
+import { format, parseISO, lastDayOfMonth, subMonths } from 'date-fns';
 import type { HisData, DataZoomEventParamsDetail, DataZoomEventParams, PriceChartProps } from '../types';
 import { Typography } from '@mui/material';
 
@@ -93,8 +93,11 @@ export default function PriceChart({ calFormStartDate, calFormEndDate, onDatesCh
               axisPointer: {
                 type: 'cross',
                 crossStyle: {
-                  color: '#999'
+                  color: '#333'
                 }
+              },
+              textStyle: {
+                color: '#333'
               }
             },
             toolbox: {
@@ -107,7 +110,10 @@ export default function PriceChart({ calFormStartDate, calFormEndDate, onDatesCh
               }
             },
             legend: {
-              data: ['Close Price', 'Change Percent']
+              data: ['Close Price', 'Change Percent'],
+              textStyle: {
+                color: '#333'
+              }
             },
             dataZoom: [
               {
@@ -241,6 +247,9 @@ export default function PriceChart({ calFormStartDate, calFormEndDate, onDatesCh
                 name: 'Change Percent',
                 type: 'bar',
                 yAxisIndex: 1,
+                itemStyle: {
+                  opacity: 0.5
+                },
                 tooltip: {
                   valueFormatter: function (value: (string | number | Date | null | undefined) | (string | number | Date | null | undefined)[]) {
                     if (value === undefined || value === null) return '';
@@ -346,33 +355,14 @@ export default function PriceChart({ calFormStartDate, calFormEndDate, onDatesCh
 
       if (calFormEndDate) {
         try {
-          const endDateObj = parseISO(calFormEndDate);
-          const currentMonthLastDayObj = lastDayOfMonth(endDateObj);
-          const targetEndCurrentMonth = format(currentMonthLastDayObj, 'yyyy-MM-dd');
-
-          if (allDates.includes(targetEndCurrentMonth)) {
-            effectiveZoomEndDateStr = targetEndCurrentMonth;
-          } else {
-            for (let i = allDates.length - 1; i >= 0; i--) {
-              if (allDates[i] <= calFormEndDate) {
-                const d = parseISO(allDates[i]);
-                if (isLastDayOfMonth(d)) {
-                  effectiveZoomEndDateStr = allDates[i];
-                  break;
-                }
-              }
-            }
-            if (!effectiveZoomEndDateStr) {
-              for (let i = allDates.length - 1; i >= 0; i--) {
-                if (allDates[i] <= calFormEndDate) {
-                  effectiveZoomEndDateStr = allDates[i];
-                  break;
-                }
-              }
+          for (let i = allDates.length - 1; i >= 0; i--) {
+            if (allDates[i] <= calFormEndDate) {
+              effectiveZoomEndDateStr = allDates[i];
+              break;
             }
           }
           if (!effectiveZoomEndDateStr && allDates.length > 0) {
-             effectiveZoomEndDateStr = allDates[allDates.length -1];
+            effectiveZoomEndDateStr = allDates[allDates.length - 1];
           }
         } catch (e) {
           console.error("Error processing end_date for dataZoom sync:", e);

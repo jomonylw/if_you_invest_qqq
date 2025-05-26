@@ -54,8 +54,8 @@ export default function InvestmentForm({
   };
 
   return (
-    <Card className="mb-8 mt-8" elevation={3} sx={{ borderRadius: 2 }}>
-      <CardContent sx={{ padding: 3 }}>
+    <Card className="mb-8 mt-8" elevation={4} sx={{ borderRadius: 3, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', overflow: 'visible' }}>
+      <CardContent sx={{ padding: 4 }}>
 
         <PriceChart
           calFormStartDate={formParams.start_date}
@@ -77,7 +77,11 @@ export default function InvestmentForm({
         </Typography>
 
         <form onSubmit={handleSubmit} className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <Box sx={{ bgcolor: 'background.default', p: 3, borderRadius: 2, boxShadow: 1, mb: 4 }}>
+            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.dark' }}>
+              Investment Date Range
+            </Typography>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <DatePicker
               label="Start Date"
               value={formParams.start_date ? parseISO(formParams.start_date) : null}
@@ -108,8 +112,15 @@ export default function InvestmentForm({
                 }
               }}
             />
-            <TextField
-              label="Initial Investment ($)"
+            </div>
+          </Box>
+          <Box sx={{ bgcolor: 'background.default', p: 3, borderRadius: 2, boxShadow: 1 }}>
+            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.dark' }}>
+              Investment Amount & Plan
+            </Typography>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <TextField
+                label="Initial Investment ($)"
               name="initial_investment"
               type="number"
               value={formParams.initial_investment}
@@ -148,7 +159,8 @@ export default function InvestmentForm({
                 startAdornment: <Typography sx={{ mr: 1, color: 'text.secondary' }}>$</Typography>,
               }}
             />
-          </div>
+            </div>
+          </Box>
           <Button
             type="submit"
             variant="contained"
@@ -157,15 +169,19 @@ export default function InvestmentForm({
             size="large"
             fullWidth
             sx={{
-              py: 1.5,
+              mt: 4,
+              py: 2,
               fontWeight: 'bold',
-              boxShadow: 2,
+              fontSize: '1.1rem',
+              boxShadow: '0 4px 14px rgba(0, 123, 255, 0.3)',
               '&:hover': {
-                boxShadow: 4
+                boxShadow: '0 6px 20px rgba(0, 123, 255, 0.4)',
+                transform: 'translateY(-2px)',
+                transition: 'all 0.3s ease'
               }
             }}
           >
-            {apiLoading ? <CircularProgress size={24} color="inherit" /> : 'Calculate'}
+            {apiLoading ? <CircularProgress size={24} color="inherit" /> : 'Calculate Returns'}
           </Button>
         </form>
 

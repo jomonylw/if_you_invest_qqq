@@ -30,6 +30,16 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
   };
 
   const chartOption = {
+    title: {
+      // text: 'Monthly Investment Breakdown',
+      left: 'center',
+      top: 10,
+      textStyle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#333'
+      }
+    },
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -55,7 +65,18 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
         'Monthly Investment Return',
         'Dividend Amount',
         'Dividend Return'
-      ]
+      ],
+      top: 'bottom',
+      padding: [50, 0, 0, 0], // 增加顶部内边距，使图例更靠下
+      orient: 'horizontal',
+      itemGap: 15,
+      itemWidth: 20,
+      itemHeight: 14,
+      textStyle: {
+        fontSize: 14,
+        overflow: 'truncate',
+        width: 120 // 限制文本宽度，防止图例项过长导致多行
+      }
     },
     xAxis: [
       {
@@ -88,10 +109,13 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
         type: 'bar',
         stack: 'total',
         itemStyle: {
-          color: '#5470C6' // Color 1
+          color: '#1976D2' // 更现代的蓝色
         },
         emphasis: {
           focus: 'series'
+        },
+        label: {
+          show: false
         },
         data: monthlyBreakdown.map((item: MonthlyBreakdownItem) => parseFloat(item.initialInvestmentAmount))
       },
@@ -100,10 +124,13 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
         type: 'bar',
         stack: 'total',
         itemStyle: {
-          color: 'rgba(84, 112, 198, 0.5)' // Color 1 (70% transparent)
+          color: 'rgba(25, 118, 210, 0.6)' // 更现代的蓝色，半透明
         },
         emphasis: {
           focus: 'series'
+        },
+        label: {
+          show: false
         },
         data: monthlyBreakdown.map((item: MonthlyBreakdownItem) => parseFloat(item.initialInvestmentReturn))
       },
@@ -112,10 +139,13 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
         type: 'bar',
         stack: 'total',
         itemStyle: {
-          color: '#91CC75' // Color 2
+          color: '#388E3C' // 更现代的绿色
         },
         emphasis: {
           focus: 'series'
+        },
+        label: {
+          show: false
         },
         data: monthlyBreakdown.map((item: MonthlyBreakdownItem) => parseFloat(item.monthlyInvestmentAmount))
       },
@@ -124,10 +154,13 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
         type: 'bar',
         stack: 'total',
         itemStyle: {
-          color: 'rgba(145, 204, 117, 0.5)' // Color 2 (70% transparent)
+          color: 'rgba(56, 142, 60, 0.6)' // 更现代的绿色，半透明
         },
         emphasis: {
           focus: 'series'
+        },
+        label: {
+          show: false
         },
         data: monthlyBreakdown.map((item: MonthlyBreakdownItem) => parseFloat(item.monthlyInvestmentReturn))
       },
@@ -136,10 +169,13 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
         type: 'bar',
         stack: 'total',
         itemStyle: {
-          color: '#FAC858' // Color 3
+          color: '#F57C00' // 更现代的橙色
         },
         emphasis: {
           focus: 'series'
+        },
+        label: {
+          show: false
         },
         data: monthlyBreakdown.map((item: MonthlyBreakdownItem) => parseFloat(item.dividendAmount))
       },
@@ -148,10 +184,13 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
         type: 'bar',
         stack: 'total',
         itemStyle: {
-          color: 'rgba(250, 200, 88, 0.5)' // Color 3 (70% transparent)
+          color: 'rgba(245, 124, 0, 0.6)' // 更现代的橙色，半透明
         },
         emphasis: {
           focus: 'series'
+        },
+        label: {
+          show: false
         },
         data: monthlyBreakdown.map((item: MonthlyBreakdownItem) => parseFloat(item.dividendReturn))
       }
@@ -235,81 +274,81 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
           </div>
         </div>
         
-        <div className="flex flex-col gap-4 mb-4"> {/* Main container. spacing={2} -> gap-4 (16px), direction="column" -> flex-col */}
+        <div className="flex flex-col gap-6 mb-6"> {/* Main container with increased spacing */}
           {/* Price Returns Group */}
-          <div className="w-full"> {/* Corresponds to Grid item xs={12} */}
-            <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>Price Returns</Typography>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4"> {/* container spacing={2} -> gap-4. md={3} items -> 2x2 grid */}
-              <div> {/* item xs={12} sm={6} md={3} */}
-                <Typography variant="body2">Nominal Price Return:</Typography>
-                <Typography variant="h6">{formatPercentage(nominalPriceReturn)}</Typography>
+          <div className="w-full bg-white rounded-xl shadow-md p-6 border border-gray-100">
+            <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main', mb: 3 }}>Price Returns</Typography>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-5">
+              <div className="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow">
+                <Typography variant="body2" className="text-gray-600">Nominal Price Return:</Typography>
+                <Typography variant="h6" className="font-bold text-blue-700">{formatPercentage(nominalPriceReturn)}</Typography>
               </div>
-              <div> {/* item xs={12} sm={6} md={3} */}
-                <Typography variant="body2">Annualized Price Return:</Typography>
-                <Typography variant="h6">{formatPercentage(annualizedPriceReturn)}</Typography>
+              <div className="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow">
+                <Typography variant="body2" className="text-gray-600">Annualized Price Return:</Typography>
+                <Typography variant="h6" className="font-bold text-blue-700">{formatPercentage(annualizedPriceReturn)}</Typography>
               </div>
-              <div> {/* item xs={12} sm={6} md={3} */}
-                <Typography variant="body2">
+              <div className="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow">
+                <Typography variant="body2" className="text-gray-600">
                   Nominal Price Return <br />
                   (Including Dividends)
                 </Typography>
-                <Typography variant="h6">{formatPercentage(nominalPriceReturnWithDividends)}</Typography>
+                <Typography variant="h6" className="font-bold text-blue-700">{formatPercentage(nominalPriceReturnWithDividends)}</Typography>
               </div>
-              <div> {/* item xs={12} sm={6} md={3} */}
-                <Typography variant="body2">
+              <div className="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow">
+                <Typography variant="body2" className="text-gray-600">
                   Annualized Price Return <br />
                   (Including Dividends)
                 </Typography>
-                <Typography variant="h6">{formatPercentage(annualizedPriceReturnWithDividends)}</Typography>
+                <Typography variant="h6" className="font-bold text-blue-700">{formatPercentage(annualizedPriceReturnWithDividends)}</Typography>
               </div>
             </div>
           </div>
 
           {/* Total Invested Group - 单独一行 */}
-          <div className="w-full mt-4"> {/* item xs={12}, sx={{ mt: 2 }} -> mt-4 */}
-            <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>Investment Summary</Typography>
-            <div> {/* Replaces <Grid container> for single item layout */}
-                <div className="w-full sm:w-1/2 md:w-1/3 bg-blue-50 p-3 rounded-md"> {/* Replaces <Grid item xs={12} sm={6} md={4}> */}
-                    <Typography variant="body2">Total Invested:</Typography>
-                    <Typography variant="h6" className="font-bold">{formatCurrency(totalInvested)}</Typography>
+          <div className="w-full bg-white rounded-xl shadow-md p-6 border border-gray-100">
+            <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main', mb: 3 }}>Investment Summary</Typography>
+            <div>
+                <div className="w-full sm:w-1/2 md:w-1/3 bg-blue-100 p-5 rounded-lg shadow-sm border border-blue-200 hover:shadow-md transition-shadow">
+                    <Typography variant="body2" className="text-gray-600">Total Invested:</Typography>
+                    <Typography variant="h6" className="font-bold text-blue-800">{formatCurrency(totalInvested)}</Typography>
                 </div>
             </div>
           </div>
 
           {/* Total Returns Group (Without Dividends) */}
-          <div className="w-full mt-4"> {/* item xs={12}, sx={{ mt: 2 }} -> mt-4 */}
-            <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>Growth (Excluding Dividends)</Typography>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"> {/* container spacing={2} -> gap-4. md={4} items -> 3 cols */}
-              <div> {/* item xs={12} sm={6} md={4} */}
-                <Typography variant="body2">Nominal Total Return:</Typography>
-                <Typography variant="h6">{formatPercentage(nominalTotalReturnWithoutDividends)}</Typography>
+          <div className="w-full bg-white rounded-xl shadow-md p-6 border border-gray-100">
+            <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main', mb: 3 }}>Growth (Excluding Dividends)</Typography>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+              <div className="bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <Typography variant="body2" className="text-gray-600">Nominal Total Return:</Typography>
+                <Typography variant="h6" className="font-bold">{formatPercentage(nominalTotalReturnWithoutDividends)}</Typography>
               </div>
-              <div> {/* item xs={12} sm={6} md={4} */}
-                <Typography variant="body2">Annualized Total Return:</Typography>
-                <Typography variant="h6">{formatPercentage(annualizedTotalReturnWithoutDividends)}</Typography>
+              <div className="bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <Typography variant="body2" className="text-gray-600">Annualized Total Return:</Typography>
+                <Typography variant="h6" className="font-bold">{formatPercentage(annualizedTotalReturnWithoutDividends)}</Typography>
               </div>
-              <div> {/* item xs={12} sm={6} md={4} */}
-                <Typography variant="body2">Investment Grew To:</Typography>
+              <div className="bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <Typography variant="body2" className="text-gray-600">Investment Grew To:</Typography>
                 <Typography variant="h6" className="font-bold text-green-700">{formatCurrency(investmentGrewToPrice)}</Typography>
               </div>
             </div>
           </div>
 
           {/* Total Returns Group (With Dividends) */}
-          <div className="w-full mt-4"> {/* item xs={12}, sx={{ mt: 2 }} -> mt-4 */}
-            <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>Growth (Including Dividends)</Typography>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"> {/* container spacing={2} -> gap-4. md={4} items -> 3 cols */}
-              <div> {/* item xs={12} sm={6} md={4} */}
-                <Typography variant="body2">Nominal Total Return:</Typography>
-                <Typography variant="h6">{formatPercentage(nominalTotalReturn)}</Typography>
+          <div className="w-full bg-white rounded-xl shadow-md p-6 border border-gray-100">
+            <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main', mb: 3 }}>Growth (Including Dividends)</Typography>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+              <div className="bg-green-50 p-4 rounded-lg shadow-sm border border-green-100 hover:shadow-md transition-shadow">
+                <Typography variant="body2" className="text-gray-600">Nominal Total Return:</Typography>
+                <Typography variant="h6" className="font-bold text-green-700">{formatPercentage(nominalTotalReturn)}</Typography>
               </div>
-              <div> {/* item xs={12} sm={6} md={4} */}
-                <Typography variant="body2">Annualized Total Return:</Typography>
-                <Typography variant="h6">{formatPercentage(annualizedTotalReturn)}</Typography>
+              <div className="bg-green-50 p-4 rounded-lg shadow-sm border border-green-100 hover:shadow-md transition-shadow">
+                <Typography variant="body2" className="text-gray-600">Annualized Total Return:</Typography>
+                <Typography variant="h6" className="font-bold text-green-700">{formatPercentage(annualizedTotalReturn)}</Typography>
               </div>
-              <div> {/* item xs={12} sm={6} md={4} */}
-                <Typography variant="body2">Investment Grew To:</Typography>
-                <Typography variant="h6" className="font-bold text-green-700" sx={{ fontSize: '1.5rem' }}>
+              <div className="bg-green-50 p-4 rounded-lg shadow-sm border border-green-100 hover:shadow-md transition-shadow">
+                <Typography variant="body2" className="text-gray-600">Investment Grew To:</Typography>
+                <Typography variant="h6" className="font-bold text-green-800" sx={{ fontSize: '1.5rem' }}>
                   <span className="inline-block">$<CountUp
                     start={0}
                     end={parseFloat(investmentGrewToTotalReturn)}
@@ -336,7 +375,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
         >
           Monthly Breakdown
         </Typography>
-        <ReactECharts option={chartOption} style={{ height: 400 }} />
+        <ReactECharts option={chartOption} style={{ height: 500, width: '100%' }} className="mt-4" />
       </CardContent>
     </Card>
   );
