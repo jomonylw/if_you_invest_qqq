@@ -1,6 +1,6 @@
 "use client";
 import { useState, useCallback } from "react"; // Added useCallback
-import { TextField, Button, Card, CardContent, Typography, CircularProgress, Alert } from '@mui/material';
+import { TextField, Button, Card, CardContent, Typography, CircularProgress, Alert, Box, Divider } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { format, parseISO } from 'date-fns';
 import type { InvestmentFormProps, CalApiParams } from '../types';
@@ -54,8 +54,8 @@ export default function InvestmentForm({
   };
 
   return (
-    <Card className="mb-8 mt-8">
-      <CardContent>
+    <Card className="mb-8 mt-8" elevation={3} sx={{ borderRadius: 2 }}>
+      <CardContent sx={{ padding: 3 }}>
 
         <PriceChart
           calFormStartDate={formParams.start_date}
@@ -63,23 +63,50 @@ export default function InvestmentForm({
           onDatesChange={handleChartDatesChangeInForm}
         />
 
-        <h2 className="text-xl font-semibold mb-4 text-center pt-5">Calculate Investment Growth</h2>
+        <Typography
+          variant="h5"
+          component="h2"
+          sx={{
+            textAlign: 'center',
+            fontWeight: 600,
+            my: 3,
+            color: 'primary.main'
+          }}
+        >
+          Calculate Investment Growth
+        </Typography>
 
-        <form onSubmit={handleSubmit} className="mt-4"> {/* Added margin top to the form for spacing */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <form onSubmit={handleSubmit} className="mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <DatePicker
               label="Start Date"
               value={formParams.start_date ? parseISO(formParams.start_date) : null}
-              onAccept={(newValue) => handleDateChange('start_date', newValue)}
+              onChange={(newValue) => handleDateChange('start_date', newValue)}
               format="yyyy-MM-dd"
-              slotProps={{ textField: { fullWidth: true, required: true, name: "start_date", inputProps: { readOnly: true } } }}
+              slotProps={{
+                textField: {
+                  fullWidth: true,
+                  required: true,
+                  name: "start_date",
+                  inputProps: { readOnly: true },
+                  sx: { bgcolor: 'background.paper' }
+                }
+              }}
             />
             <DatePicker
               label="End Date"
               value={formParams.end_date ? parseISO(formParams.end_date) : null}
-              onAccept={(newValue) => handleDateChange('end_date', newValue)}
+              onChange={(newValue) => handleDateChange('end_date', newValue)}
               format="yyyy-MM-dd"
-              slotProps={{ textField: { fullWidth: true, required: true, name: "end_date", inputProps: { readOnly: true } } }}
+              slotProps={{
+                textField: {
+                  fullWidth: true,
+                  required: true,
+                  name: "end_date",
+                  inputProps: { readOnly: true },
+                  sx: { bgcolor: 'background.paper' }
+                }
+              }}
             />
             <TextField
               label="Initial Investment ($)"
@@ -89,6 +116,11 @@ export default function InvestmentForm({
               onChange={handleChange}
               fullWidth
               required
+              variant="outlined"
+              sx={{ bgcolor: 'background.paper' }}
+              InputProps={{
+                startAdornment: <Typography sx={{ mr: 1, color: 'text.secondary' }}>$</Typography>,
+              }}
             />
             <TextField
               label="Monthly Investment Date (1-31)"
@@ -98,6 +130,8 @@ export default function InvestmentForm({
               onChange={handleChange}
               fullWidth
               required
+              variant="outlined"
+              sx={{ bgcolor: 'background.paper' }}
               inputProps={{ min: 1, max: 31 }}
             />
             <TextField
@@ -108,17 +142,63 @@ export default function InvestmentForm({
               onChange={handleChange}
               fullWidth
               required
+              variant="outlined"
+              sx={{ bgcolor: 'background.paper' }}
+              InputProps={{
+                startAdornment: <Typography sx={{ mr: 1, color: 'text.secondary' }}>$</Typography>,
+              }}
             />
           </div>
-          <Button type="submit" variant="contained" color="primary" disabled={apiLoading}>
-            {apiLoading ? <CircularProgress size={24} /> : 'Calculate'}
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={apiLoading}
+            size="large"
+            fullWidth
+            sx={{
+              py: 1.5,
+              fontWeight: 'bold',
+              boxShadow: 2,
+              '&:hover': {
+                boxShadow: 4
+              }
+            }}
+          >
+            {apiLoading ? <CircularProgress size={24} color="inherit" /> : 'Calculate'}
           </Button>
         </form>
 
-        {apiLoading && <Typography className="mt-4">Calculating...</Typography>}
-        {apiError && <Alert severity="error" className="mt-4">Error: {apiError}</Alert>}
+        {apiLoading && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+            <Typography variant="body1" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
+              <CircularProgress size={20} sx={{ mr: 1 }} /> Calculating...
+            </Typography>
+          </Box>
+        )}
+        
+        {apiError && (
+          <Alert severity="error" sx={{ mt: 4, borderRadius: 1 }}>Error: {apiError}</Alert>
+        )}
+        
         {apiResult && (
-          <InvestmentResultsChart results={apiResult} />
+          <>
+            <Divider sx={{ my: 4 }} />
+            {/* <Typography variant="h6" sx={{ mb: 2, fontWeight: 'medium' }}>Investment Results</Typography> */}
+            <Typography
+              variant="h5"
+              component="h2"
+              sx={{
+                textAlign: 'center',
+                fontWeight: 600,
+                my: 3,
+                color: 'primary.main'
+              }}
+            >
+              Investment Results
+            </Typography>
+            <InvestmentResultsChart results={apiResult} />
+          </>
         )}
       </CardContent>
     </Card>

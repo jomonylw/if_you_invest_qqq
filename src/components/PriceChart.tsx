@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import type { EChartsOption, DataZoomComponentOption } from 'echarts';
 import { format, parseISO, lastDayOfMonth, subMonths, isLastDayOfMonth } from 'date-fns';
 import type { HisData, DataZoomEventParamsDetail, DataZoomEventParams, PriceChartProps } from '../types';
+import { Typography } from '@mui/material';
 
 const formatCurrency = (value: number | undefined | null): string => {
   if (value === undefined || value === null) {
@@ -123,6 +124,7 @@ export default function PriceChart({ calFormStartDate, calFormEndDate, onDatesCh
                 xAxisIndex: [0],
                 start: initialStartPercent,
                 end: initialEndPercent,
+                zoomOnMouseWheel: false
               }
             ],
             xAxis: [
@@ -471,7 +473,19 @@ export default function PriceChart({ calFormStartDate, calFormEndDate, onDatesCh
 
   return (
     <>
-      <h2 className="text-xl font-semibold mb-4 text-center">QQQ Historical Price Data</h2>
+      {/* <h2 className="text-xl font-semibold mb-4 text-center">QQQ Historical Price Data</h2> */}
+      <Typography
+        variant="h5"
+        component="h2"
+        sx={{
+          textAlign: 'center',
+          fontWeight: 600,
+          my: 3,
+          color: 'primary.main'
+        }}
+      >
+        QQQ Historical Price Data
+      </Typography>
       {chartOption && (
         <ReactECharts
           option={chartOption}

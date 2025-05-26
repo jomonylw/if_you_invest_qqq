@@ -1,6 +1,7 @@
 "use client";
 import { Card, CardContent, Typography } from '@mui/material';
 import ReactECharts from 'echarts-for-react';
+import CountUp from 'react-countup';
 import type { InvestmentResultsChartProps, MonthlyBreakdownItem } from '../types';
 
 export default function InvestmentResultsChart({ results }: InvestmentResultsChartProps) {
@@ -160,7 +161,80 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
   return (
     <Card className="mt-6">
       <CardContent>
-        <h2 className="text-xl font-semibold mb-4 text-center pt-5">Calculation Results</h2>
+        {/* <Typography
+          variant="h5"
+          component="h2"
+          sx={{
+            textAlign: 'center',
+            fontWeight: 600,
+            my: 3,
+            color: 'primary.main'
+          }}
+        >
+          Calculation Results
+        </Typography> */}
+        
+        {/* Wealth Growth Visual Comparison Area */}
+        <div className={`mb-8 bg-gradient-to-r from-blue-50 ${parseFloat(nominalTotalReturn) >= 0 ? 'to-green-50' : 'to-red-50'} p-6 rounded-xl shadow-md`}>
+          <Typography variant="subtitle1" className="text-center mb-3 font-bold text-gray-700">Wealth Growth Comparison</Typography>
+          
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            {/* Investment Amount */}
+            <div className="flex-1 text-center p-4">
+              <Typography variant="body1" className="text-gray-500 mb-1">Investment Amount</Typography>
+              <Typography variant="h3" className="font-bold text-blue-700">
+                {formatCurrency(totalInvested)}
+              </Typography>
+            </div>
+            
+            {/* Arrow and Growth Rate */}
+            <div className="flex flex-col items-center py-4 px-2">
+              <Typography
+                variant="h1"
+                className={`transform rotate-90 md:rotate-0 ${parseFloat(nominalTotalReturn) >= 0 ? 'text-green-600' : 'text-red-600'}`}
+              >
+                {parseFloat(nominalTotalReturn) >= 0 ? '→' : '→'}
+              </Typography>
+              <div className={`rounded-full px-4 py-2 mt-2 ${parseFloat(nominalTotalReturn) >= 0 ? 'bg-green-100' : 'bg-red-100'}`}>
+                <Typography
+                  variant="h6"
+                  className={`font-bold ${parseFloat(nominalTotalReturn) >= 0 ? 'text-green-800' : 'text-red-800'}`}
+                >
+                  {parseFloat(nominalTotalReturn) >= 0 ? '+' : ''}{formatPercentage(nominalTotalReturn)}
+                </Typography>
+              </div>
+            </div>
+            
+            {/* Final Wealth */}
+            <div className={`flex-1 text-center p-4 rounded-lg shadow-inner ${parseFloat(nominalTotalReturn) >= 0 ? 'bg-green-100' : 'bg-red-100'}`}>
+              <Typography variant="body1" className="text-gray-700 mb-1">Final Wealth (With Dividends)</Typography>
+              <Typography
+                variant="h2"
+                className={`font-bold ${parseFloat(nominalTotalReturn) >= 0 ? 'text-green-700' : 'text-red-700'}`}
+                sx={{ fontSize: '2.5rem' }}
+              >
+                <span className="inline-block">$<CountUp
+                  start={0}
+                  end={parseFloat(investmentGrewToTotalReturn)}
+                  duration={2.5}
+                  decimals={2}
+                  separator=","
+                  useEasing={true}
+                /></span>
+              </Typography>
+              <Typography
+                variant="body2"
+                className={`mt-1 ${parseFloat(nominalTotalReturn) >= 0 ? 'text-green-600' : 'text-red-600'}`}
+              >
+                {parseFloat(investmentGrewToTotalReturn) > parseFloat(totalInvested)
+                  ? `Growth of ${(parseFloat(investmentGrewToTotalReturn) / parseFloat(totalInvested)).toFixed(1)}x`
+                  : `Loss of ${((1 - parseFloat(investmentGrewToTotalReturn) / parseFloat(totalInvested)) * 100).toFixed(1)}%`
+                }
+              </Typography>
+            </div>
+          </div>
+        </div>
+        
         <div className="flex flex-col gap-4 mb-4"> {/* Main container. spacing={2} -> gap-4 (16px), direction="column" -> flex-col */}
           {/* Price Returns Group */}
           <div className="w-full"> {/* Corresponds to Grid item xs={12} */}
@@ -195,9 +269,9 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
           <div className="w-full mt-4"> {/* item xs={12}, sx={{ mt: 2 }} -> mt-4 */}
             <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>Investment Summary</Typography>
             <div> {/* Replaces <Grid container> for single item layout */}
-                <div className="w-full sm:w-1/2 md:w-1/3"> {/* Replaces <Grid item xs={12} sm={6} md={4}> */}
+                <div className="w-full sm:w-1/2 md:w-1/3 bg-blue-50 p-3 rounded-md"> {/* Replaces <Grid item xs={12} sm={6} md={4}> */}
                     <Typography variant="body2">Total Invested:</Typography>
-                    <Typography variant="h6">{formatCurrency(totalInvested)}</Typography>
+                    <Typography variant="h6" className="font-bold">{formatCurrency(totalInvested)}</Typography>
                 </div>
             </div>
           </div>
@@ -216,7 +290,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
               </div>
               <div> {/* item xs={12} sm={6} md={4} */}
                 <Typography variant="body2">Investment Grew To:</Typography>
-                <Typography variant="h6">{formatCurrency(investmentGrewToPrice)}</Typography>
+                <Typography variant="h6" className="font-bold text-green-700">{formatCurrency(investmentGrewToPrice)}</Typography>
               </div>
             </div>
           </div>
@@ -235,12 +309,33 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
               </div>
               <div> {/* item xs={12} sm={6} md={4} */}
                 <Typography variant="body2">Investment Grew To:</Typography>
-                <Typography variant="h6">{formatCurrency(investmentGrewToTotalReturn)}</Typography>
+                <Typography variant="h6" className="font-bold text-green-700" sx={{ fontSize: '1.5rem' }}>
+                  <span className="inline-block">$<CountUp
+                    start={0}
+                    end={parseFloat(investmentGrewToTotalReturn)}
+                    duration={2}
+                    decimals={2}
+                    separator=","
+                    useEasing={true}
+                  /></span>
+                </Typography>
               </div>
             </div>
           </div>
         </div>
-        <h2 className="text-xl font-semibold mb-4 text-center pt-5">Monthly Breakdown</h2>
+        {/* <h2 className="text-xl font-semibold mb-4 text-center pt-5">Monthly Breakdown</h2> */}
+        <Typography
+          variant="h5"
+          component="h2"
+          sx={{
+            textAlign: 'center',
+            fontWeight: 600,
+            my: 3,
+            color: 'primary.main'
+          }}
+        >
+          Monthly Breakdown
+        </Typography>
         <ReactECharts option={chartOption} style={{ height: 400 }} />
       </CardContent>
     </Card>

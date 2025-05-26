@@ -1,18 +1,23 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 // Typography, CircularProgress, Alert removed as they are handled by InvestmentForm
 import InvestmentForm from '@/components/InvestmentForm'; // Import new component
 import type { CalApiParams, CalApiResponseData } from '@/types'; // Import types
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { Typography } from '@mui/material';
 // DatePicker and format, parseISO are now handled within InvestmentForm or not needed here
-// import { format } from 'date-fns'; // format is not needed here anymore
+import { format, subYears } from 'date-fns';
 
 
 export default function Home() {
+  const today = new Date();
+  const defaultEndDate = format(today, 'yyyy-MM-dd');
+  const defaultStartDate = format(subYears(today, 5), 'yyyy-MM-dd');
+
   const [calFormParams, setCalFormParams] = useState<CalApiParams>({
-    start_date: '2020-01-01',
-    end_date: '2023-12-31',
+    start_date: defaultStartDate,
+    end_date: defaultEndDate,
     initial_investment: '10000',
     monthly_investment_date: '1',
     monthly_investment_amount: '1000',
@@ -69,10 +74,27 @@ export default function Home() {
     }
   };
 
+  // 在页面加载完成后自动触发计算
+  useEffect(() => {
+    handleCalFormSubmit(calFormParams);
+  }, []); // 空依赖数组确保只在组件挂载时运行一次
+
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4 text-center">QQQ Investment Calculator</h1>
+      {/* <h1 className="text-2xl font-bold mb-4 text-center">QQQ Investment Calculator</h1> */}
+      <Typography
+        variant="h5"
+        component="h2"
+        sx={{
+          textAlign: 'center',
+          fontWeight: 600,
+          my: 3,
+          color: 'primary.main'
+        }}
+      >
+        QQQ Investment Calculator
+      </Typography>
 
       <InvestmentForm
         initialFormParams={calFormParams}
