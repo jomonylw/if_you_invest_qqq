@@ -4,6 +4,7 @@ import { TextField, Button, Card, CardContent, Typography, CircularProgress, Ale
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { format, parseISO } from 'date-fns';
 import type { InvestmentFormProps, CalApiParams } from '../types';
+import InvestmentResultsChart from './InvestmentResultsChart';
 
 export default function InvestmentForm({
   initialFormParams,
@@ -97,14 +98,7 @@ export default function InvestmentForm({
         {apiLoading && <Typography className="mt-4">Calculating...</Typography>}
         {apiError && <Alert severity="error" className="mt-4">Error: {apiError}</Alert>}
         {apiResult && (
-          <Card className="mt-6">
-            <CardContent>
-              <Typography variant="h6" gutterBottom>Calculation Results:</Typography>
-              <pre className="bg-gray-100 p-4 rounded overflow-x-auto">
-                {JSON.stringify(apiResult, null, 2)}
-              </pre>
-            </CardContent>
-          </Card>
+          <InvestmentResultsChart results={apiResult} />
         )}
       </CardContent>
     </Card>

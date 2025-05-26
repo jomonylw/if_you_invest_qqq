@@ -66,3 +66,7 @@ export interface InvestmentFormProps {
   apiError: string | null;
   onDateChangeInForm: (name: 'start_date' | 'end_date', date: string) => void;
 }
+// Types for InvestmentResultsChart.tsx
+export interface InvestmentResultsChartProps {
+  results: CalApiResponseData;
+}

@@ -297,18 +297,23 @@ export async function GET(request: Request) {
     return NextResponse.json({
       success: true,
       data: {
-        nominalPriceReturn: nominalPriceReturn.toFixed(4),
-        annualizedPriceReturn: annualizedPriceReturn.toFixed(4),
-        nominalPriceReturnWithDividends: nominalPriceReturnWithDividends.toFixed(4),
-        annualizedPriceReturnWithDividends: annualizedPriceReturnWithDividends.toFixed(4),
-        totalInvested: totalInvested.toFixed(4),
-        nominalTotalReturnWithoutDividends: nominalTotalReturnWithoutDividends.toFixed(4),
-        annualizedTotalReturnWithoutDividends: annualizedTotalReturnWithoutDividends.toFixed(4),
-        investmentGrewToPrice: investmentGrewToPrice.toFixed(4),
-        nominalTotalReturn: nominalTotalReturn.toFixed(4),
-        annualizedTotalReturn: annualizedTotalReturn.toFixed(4),
-        investmentGrewToTotalReturn: investmentGrewToTotalReturn.toFixed(4),
-        monthlyBreakdown: monthlyBreakdown,
+        nominalPriceReturn: nominalPriceReturn.toFixed(4), // 名义价格回报率（仅考虑价格变化，不含股息）
+        annualizedPriceReturn: annualizedPriceReturn.toFixed(4), // 年化价格回报率（仅考虑价格变化，不含股息）
+        //----
+        nominalPriceReturnWithDividends: nominalPriceReturnWithDividends.toFixed(4), // 名义价格回报率（基于单位初始投资，考虑股息再投资）
+        annualizedPriceReturnWithDividends: annualizedPriceReturnWithDividends.toFixed(4), // 年化价格回报率（基于单位初始投资，衡量标的自身表现，考虑股息再投资）
+        //----
+        totalInvested: totalInvested.toFixed(4), // 总投入资本（初始投资 + 历次定投本金）
+        //----
+        nominalTotalReturnWithoutDividends: nominalTotalReturnWithoutDividends.toFixed(4), // 名义总回报率（基于总投入资本，不含股息）
+        annualizedTotalReturnWithoutDividends: annualizedTotalReturnWithoutDividends.toFixed(4), // 年化总回报率（基于总投入资本，不含股息）
+        investmentGrewToPrice: investmentGrewToPrice.toFixed(4), // 投资增长至的最终价值（基于总投入资本，仅价格变动，不含股息）
+        //----
+        nominalTotalReturn: nominalTotalReturn.toFixed(4), // 名义总回报率（基于总投入资本，含股息再投资）
+        annualizedTotalReturn: annualizedTotalReturn.toFixed(4), // 年化总回报率（基于总投入资本，衡量整体投资策略表现，含股息再投资）
+        investmentGrewToTotalReturn: investmentGrewToTotalReturn.toFixed(4), // 投资增长至的最终价值（含股息再投资）
+        //----
+        monthlyBreakdown: monthlyBreakdown, // 每月投资明细
       }
     });
   } catch (error) {
