@@ -66,6 +66,16 @@ function calculateInvestmentGrowth(
   const priceDataMap = new Map(priceData.map(data => [data.date, data]));
   const allDates = priceData.map(data => data.date).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
 
+  const monthlyLastTradingDayCache = new Map<string, Date>();
+  if (allDates.length > 0) {
+    allDates.forEach(dateStr => {
+        const d = new Date(dateStr);
+        const key = `${d.getFullYear()}-${d.getMonth()}`;
+        // Since allDates is sorted, later dates for the same month will overwrite earlier ones.
+        // This ensures that the stored date for each month is the last trading day of that month.
+        monthlyLastTradingDayCache.set(key, d);
+    });
+  }
 
   // 在循环外部声明这些变量，用于跟踪累计值
   let cumulativeMonthlyInvestmentOriginalAmount = 0;
@@ -94,7 +104,30 @@ function calculateInvestmentGrowth(
 
     // Monthly investment logic
     if (monthlyInvestmentAmount > 0 && monthlyInvestmentDate !== null) {
-      if (currentDate.getDate() >= monthlyInvestmentDate && !monthlyInvestmentTracker[monthKey]) {
+      let performInvestmentCheck = false;
+      const lastTradingDayDateObj = monthlyLastTradingDayCache.get(monthKey);
+
+      if (lastTradingDayDateObj) {
+        const lastActualTradingDayOfMonth = lastTradingDayDateObj.getDate();
+        if (monthlyInvestmentDate > lastActualTradingDayOfMonth) {
+          // User's desired day is after the last trading day, so invest ON the last trading day.
+          if (currentDate.getDate() === lastActualTradingDayOfMonth) {
+            performInvestmentCheck = true;
+          }
+        } else {
+          // User's desired day is on or before the last trading day.
+          if (currentDate.getDate() >= monthlyInvestmentDate) {
+            performInvestmentCheck = true;
+          }
+        }
+      } else {
+        // Fallback if no cache entry (should not happen for months with data)
+        if (currentDate.getDate() >= monthlyInvestmentDate) {
+          performInvestmentCheck = true;
+        }
+      }
+
+      if (performInvestmentCheck && !monthlyInvestmentTracker[monthKey]) {
         let performMonthlyInvestment = true;
         // Condition to skip monthly investment if it coincides with initial investment on the designated monthly investment day:
         // - There is an initial investment.
@@ -105,7 +138,7 @@ function calculateInvestmentGrowth(
         // is also their designated monthly investment day and they make an initial investment.
         if (initialInvestment > 0 &&
             currentDate.getTime() === firstDate.getTime() && // Check if current date is the first date in priceData
-            monthlyInvestmentDate !== null &&
+            monthlyInvestmentDate !== null && // monthlyInvestmentDate is checked for null already, but good for clarity
             firstDate.getDate() === monthlyInvestmentDate) { // Check if the day of the first data point matches the monthly investment day
             performMonthlyInvestment = false;
         }

@@ -3,6 +3,7 @@ import Image from "next/image";
 import ReactECharts from 'echarts-for-react';
 import { useEffect, useState } from "react";
 import type { EChartsOption } from 'echarts';
+import { TextField, Button, Card, CardContent, Typography, CircularProgress, Alert } from '@mui/material';
 
 interface HisData {
   date: string;
@@ -10,10 +11,60 @@ interface HisData {
   pct: number;
 }
 
+interface MonthlyBreakdownItem {
+  date: string;
+  initialInvestmentAmount: string;
+  initialInvestmentReturn: string;
+  monthlyInvestmentAmount: string;
+  monthlyInvestmentReturn: string;
+  dividendAmount: string;
+  dividendReturn: string;
+  // totalInvestedCapital: string; // Uncomment if these are part of your API response
+  // totalReturn: string;
+  // totalValueWithoutDividends: string;
+  // totalValue: string;
+}
+
+interface CalApiParams {
+  start_date: string;
+  end_date: string;
+  initial_investment: string;
+  monthly_investment_date: string;
+  monthly_investment_amount: string;
+}
+
+interface CalApiResponseData {
+  nominalPriceReturn: string;
+  annualizedPriceReturn: string;
+  nominalPriceReturnWithDividends: string;
+  annualizedPriceReturnWithDividends: string;
+  totalInvested: string;
+  nominalTotalReturnWithoutDividends: string;
+  annualizedTotalReturnWithoutDividends: string;
+  investmentGrewToPrice: string;
+  nominalTotalReturn: string;
+  annualizedTotalReturn: string;
+  investmentGrewToTotalReturn: string;
+  monthlyBreakdown: MonthlyBreakdownItem[];
+}
+
+
 export default function Home() {
   const [chartOption, setChartOption] = useState<EChartsOption | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [calFormParams, setCalFormParams] = useState<CalApiParams>({
+    start_date: '2020-01-01',
+    end_date: '2023-12-31',
+    initial_investment: '10000',
+    monthly_investment_date: '1',
+    monthly_investment_amount: '1000',
+  });
+  const [calApiResult, setCalApiResult] = useState<CalApiResponseData | null>(null);
+  const [calApiLoading, setCalApiLoading] = useState(false);
+  const [calApiError, setCalApiError] = useState<string | null>(null);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -253,6 +304,50 @@ export default function Home() {
     fetchData();
   }, []);
 
+  const handleCalFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setCalFormParams(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleCalFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setCalApiLoading(true);
+    setCalApiError(null);
+    setCalApiResult(null);
+
+    const queryParams = new URLSearchParams({
+        start_date: calFormParams.start_date,
+        end_date: calFormParams.end_date,
+        initial_investment: calFormParams.initial_investment,
+        monthly_investment_date: calFormParams.monthly_investment_date,
+        monthly_investment_amount: calFormParams.monthly_investment_amount,
+    }).toString();
+
+    try {
+      const response = await fetch(`/api/cal?${queryParams}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.err || `HTTP error! status: ${response.status}`);
+      }
+      const result = await response.json();
+      if (result.success && result.data) {
+        setCalApiResult(result.data);
+      } else {
+        throw new Error(result.err || 'Failed to fetch calculation data');
+      }
+    } catch (e) {
+      console.error("Failed to fetch or process /api/cal data:", e);
+      if (e instanceof Error) {
+        setCalApiError(e.message);
+      } else {
+        setCalApiError("An unknown error occurred while fetching calculation data");
+      }
+    } finally {
+      setCalApiLoading(false);
+    }
+  };
+
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -271,7 +366,11 @@ export default function Home() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4 text-center">QQQ Historical Data</h1>
+      <h1 className="text-2xl font-bold mb-4 text-center">QQQ Investment Calculator</h1>
+      
+      
+
+      <h2 className="text-xl font-semibold mb-4 text-center">QQQ Historical Price Data</h2>
       {chartOption && (
         <ReactECharts
           option={chartOption}
@@ -280,8 +379,79 @@ export default function Home() {
           lazyUpdate={true}
         />
       )}
+      <Card className="mb-8">
+        <CardContent>
+          <Typography variant="h5" component="div" gutterBottom>
+            Calculate Investment Growth
+          </Typography>
+          <form onSubmit={handleCalFormSubmit}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <TextField
+                label="Start Date (YYYY-MM-DD)"
+                name="start_date"
+                value={calFormParams.start_date}
+                onChange={handleCalFormChange}
+                fullWidth
+                required
+              />
+              <TextField
+                label="End Date (YYYY-MM-DD)"
+                name="end_date"
+                value={calFormParams.end_date}
+                onChange={handleCalFormChange}
+                fullWidth
+                required
+              />
+              <TextField
+                label="Initial Investment ($)"
+                name="initial_investment"
+                type="number"
+                value={calFormParams.initial_investment}
+                onChange={handleCalFormChange}
+                fullWidth
+                required
+              />
+              <TextField
+                label="Monthly Investment Date (1-31)"
+                name="monthly_investment_date"
+                type="number"
+                value={calFormParams.monthly_investment_date}
+                onChange={handleCalFormChange}
+                fullWidth
+                required
+                inputProps={{ min: 1, max: 31 }}
+              />
+              <TextField
+                label="Monthly Investment Amount ($)"
+                name="monthly_investment_amount"
+                type="number"
+                value={calFormParams.monthly_investment_amount}
+                onChange={handleCalFormChange}
+                fullWidth
+                required
+              />
+            </div>
+            <Button type="submit" variant="contained" color="primary" disabled={calApiLoading}>
+              {calApiLoading ? <CircularProgress size={24} /> : 'Calculate'}
+            </Button>
+          </form>
+
+          {calApiLoading && <Typography className="mt-4">Calculating...</Typography>}
+          {calApiError && <Alert severity="error" className="mt-4">Error: {calApiError}</Alert>}
+          {calApiResult && (
+            <Card className="mt-6">
+              <CardContent>
+                <Typography variant="h6" gutterBottom>Calculation Results:</Typography>
+                <pre className="bg-gray-100 p-4 rounded overflow-x-auto">
+                  {JSON.stringify(calApiResult, null, 2)}
+                </pre>
+              </CardContent>
+            </Card>
+          )}
+        </CardContent>
+      </Card>
        <footer className="mt-8 text-center text-sm text-gray-500">
-        <p>Data fetched from /api/his</p>
+        <p>Historical data fetched from /api/his. Calculation via /api/cal.</p>
         <div className="flex gap-4 items-center justify-center mt-4 flex-col sm:flex-row">
           <a
             className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
