@@ -3,50 +3,7 @@ import { useState } from "react";
 import { TextField, Button, Card, CardContent, Typography, CircularProgress, Alert } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { format, parseISO } from 'date-fns';
-
-// Copied interfaces - consider moving to a shared types file later
-interface MonthlyBreakdownItem {
-  date: string;
-  initialInvestmentAmount: string;
-  initialInvestmentReturn: string;
-  monthlyInvestmentAmount: string;
-  monthlyInvestmentReturn: string;
-  dividendAmount: string;
-  dividendReturn: string;
-}
-
-export interface CalApiParams { // Exporting for use in page.tsx props
-  start_date: string;
-  end_date: string;
-  initial_investment: string;
-  monthly_investment_date: string;
-  monthly_investment_amount: string;
-}
-
-export interface CalApiResponseData { // Exporting for use in page.tsx props
-  nominalPriceReturn: string;
-  annualizedPriceReturn: string;
-  nominalPriceReturnWithDividends: string;
-  annualizedPriceReturnWithDividends: string;
-  totalInvested: string;
-  nominalTotalReturnWithoutDividends: string;
-  annualizedTotalReturnWithoutDividends: string;
-  investmentGrewToPrice: string;
-  nominalTotalReturn: string;
-  annualizedTotalReturn: string;
-  investmentGrewToTotalReturn: string;
-  monthlyBreakdown: MonthlyBreakdownItem[];
-}
-// End of copied interfaces
-
-interface InvestmentFormProps {
-  initialFormParams: CalApiParams;
-  onFormSubmit: (params: CalApiParams) => Promise<void>;
-  apiResult: CalApiResponseData | null;
-  apiLoading: boolean;
-  apiError: string | null;
-  onDateChangeInForm: (name: 'start_date' | 'end_date', date: string) => void;
-}
+import type { InvestmentFormProps, CalApiParams } from '../types';
 
 export default function InvestmentForm({
   initialFormParams,

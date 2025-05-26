@@ -2,7 +2,8 @@
 import { useState, useCallback } from "react";
 // Typography, CircularProgress, Alert removed as they are handled by InvestmentForm
 import PriceChart from '@/components/PriceChart';
-import InvestmentForm, { CalApiParams, CalApiResponseData } from '@/components/InvestmentForm'; // Import new component and types
+import InvestmentForm from '@/components/InvestmentForm'; // Import new component
+import type { CalApiParams, CalApiResponseData } from '@/types'; // Import types
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 // DatePicker and format, parseISO are now handled within InvestmentForm or not needed here

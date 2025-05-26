@@ -3,31 +3,7 @@ import ReactECharts from 'echarts-for-react';
 import { useEffect, useState, useCallback } from "react";
 import type { EChartsOption, DataZoomComponentOption } from 'echarts';
 import { format, parseISO, lastDayOfMonth, subMonths, isLastDayOfMonth } from 'date-fns';
-
-interface HisData {
-  date: string;
-  close: number;
-  pct: number;
-}
-
-interface DataZoomEventParamsDetail {
-  start?: number;
-  end?: number;
-  dataZoomId?: string;
-}
-
-interface DataZoomEventParams {
-  type?: 'datazoom';
-  start?: number;
-  end?: number;
-  batch?: DataZoomEventParamsDetail[];
-}
-
-interface PriceChartProps {
-  calFormStartDate: string;
-  calFormEndDate: string;
-  onDatesChange: (startDate: string, endDate: string) => void;
-}
+import type { HisData, DataZoomEventParamsDetail, DataZoomEventParams, PriceChartProps } from '../types';
 
 export default function PriceChart({ calFormStartDate, calFormEndDate, onDatesChange }: PriceChartProps) {
   const [chartOption, setChartOption] = useState<EChartsOption | null>(null);
