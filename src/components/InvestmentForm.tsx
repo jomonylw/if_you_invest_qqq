@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback } from "react"; // Added useCallback
+import React, { useState, useCallback } from "react"; // Added useCallback
 import { TextField, Button, Card, CardContent, Typography, CircularProgress, Alert, Box, Divider } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { format, parseISO } from 'date-fns';
@@ -16,6 +16,34 @@ export default function InvestmentForm({
   onDateChangeInForm,
 }: InvestmentFormProps) {
   const [formParams, setFormParams] = useState<CalApiParams>(initialFormParams);
+  const [annualReturns, setAnnualReturns] = useState<{all: string, tenYears: string, fiveYears: string} | null>(null);
+  const [loadingAnnual, setLoadingAnnual] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [errorAnnual, setErrorAnnual] = useState<string | null>(null);
+
+  // 获取预测年化收益率数据
+  React.useEffect(() => {
+    const fetchAnnualReturns = async () => {
+      setLoadingAnnual(true);
+      setErrorAnnual(null);
+      try {
+        const response = await fetch('/api/annual');
+        const data = await response.json();
+        if (data.success) {
+          setAnnualReturns(data.data);
+          // 设置默认值为 'all'
+          setFormParams(prev => ({ ...prev, predicted_annualized_return: data.data.all }));
+        } else {
+          setErrorAnnual('Failed to fetch annualized return data');
+        }
+      } catch {
+        setErrorAnnual('Error fetching annualized return data');
+      } finally {
+        setLoadingAnnual(false);
+      }
+    };
+    fetchAnnualReturns();
+  }, []);
 
   // Callback for when dates are changed directly in the PriceChart
   const handleChartDatesChangeInForm = useCallback((newStartDate: string, newEndDate: string) => {
@@ -114,52 +142,121 @@ export default function InvestmentForm({
             />
             </div>
           </Box>
-          <Box sx={{ bgcolor: 'background.default', p: 3, borderRadius: 2, boxShadow: 1 }}>
+          <Box sx={{ bgcolor: 'background.default', p: 3, borderRadius: 2, boxShadow: 1, mb: 4 }}>
             <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.dark' }}>
               Investment Amount & Plan
             </Typography>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <TextField
                 label="Initial Investment ($)"
-              name="initial_investment"
-              type="number"
-              value={formParams.initial_investment}
-              onChange={handleChange}
-              fullWidth
-              required
-              variant="outlined"
-              sx={{ bgcolor: 'background.paper' }}
-              InputProps={{
-                startAdornment: <Typography sx={{ mr: 1, color: 'text.secondary' }}>$</Typography>,
-              }}
-            />
-            <TextField
-              label="Monthly Investment Date (1-31)"
-              name="monthly_investment_date"
-              type="number"
-              value={formParams.monthly_investment_date}
-              onChange={handleChange}
-              fullWidth
-              required
-              variant="outlined"
-              sx={{ bgcolor: 'background.paper' }}
-              inputProps={{ min: 1, max: 31 }}
-            />
-            <TextField
-              label="Monthly Investment Amount ($)"
-              name="monthly_investment_amount"
-              type="number"
-              value={formParams.monthly_investment_amount}
-              onChange={handleChange}
-              fullWidth
-              required
-              variant="outlined"
-              sx={{ bgcolor: 'background.paper' }}
-              InputProps={{
-                startAdornment: <Typography sx={{ mr: 1, color: 'text.secondary' }}>$</Typography>,
-              }}
-            />
+                name="initial_investment"
+                type="number"
+                value={formParams.initial_investment}
+                onChange={handleChange}
+                fullWidth
+                required
+                variant="outlined"
+                sx={{ bgcolor: 'background.paper' }}
+                InputProps={{
+                  startAdornment: <Typography sx={{ mr: 1, color: 'text.secondary' }}>$</Typography>,
+                }}
+              />
+              <TextField
+                label="Monthly Investment Amount ($)"
+                name="monthly_investment_amount"
+                type="number"
+                value={formParams.monthly_investment_amount}
+                onChange={handleChange}
+                fullWidth
+                required
+                variant="outlined"
+                sx={{ bgcolor: 'background.paper' }}
+                InputProps={{
+                  startAdornment: <Typography sx={{ mr: 1, color: 'text.secondary' }}>$</Typography>,
+                }}
+              />
             </div>
+          </Box>
+          <Box sx={{ bgcolor: 'background.default', p: 3, borderRadius: 2, boxShadow: 1 }}>
+            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.dark' }}>
+              Predicted Annualized Return
+            </Typography>
+            {annualReturns ? (
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 2, justifyContent: 'center' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <Button
+                    variant={formParams.predicted_annualized_return === annualReturns.all ? "contained" : "outlined"}
+                    onClick={() => setFormParams(prev => ({ ...prev, predicted_annualized_return: annualReturns.all }))}
+                    sx={{ width: '100%', borderRadius: 2, transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.05)' } }}
+                  >
+                    All Period: <span style={{ backgroundColor: formParams.predicted_annualized_return === annualReturns.all ? '#004d40' : '#4fc3f7', color: formParams.predicted_annualized_return === annualReturns.all ? '#ffffff' : '#004c8c', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px', fontWeight: 'bold' }}>{annualReturns.all}%</span>
+                  </Button>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <Button
+                    variant={formParams.predicted_annualized_return === annualReturns.tenYears ? "contained" : "outlined"}
+                    onClick={() => setFormParams(prev => ({ ...prev, predicted_annualized_return: annualReturns.tenYears }))}
+                    sx={{ width: '100%', borderRadius: 2, transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.05)' } }}
+                  >
+                    Recent 10 Years: <span style={{ backgroundColor: formParams.predicted_annualized_return === annualReturns.tenYears ? '#004d40' : '#4fc3f7', color: formParams.predicted_annualized_return === annualReturns.tenYears ? '#ffffff' : '#004c8c', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px', fontWeight: 'bold' }}>{annualReturns.tenYears}%</span>
+                  </Button>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <Button
+                    variant={formParams.predicted_annualized_return === annualReturns.fiveYears ? "contained" : "outlined"}
+                    onClick={() => setFormParams(prev => ({ ...prev, predicted_annualized_return: annualReturns.fiveYears }))}
+                    sx={{ width: '100%', borderRadius: 2, transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.05)' } }}
+                  >
+                    Recent 5 Years: <span style={{ backgroundColor: formParams.predicted_annualized_return === annualReturns.fiveYears ? '#004d40' : '#4fc3f7', color: formParams.predicted_annualized_return === annualReturns.fiveYears ? '#ffffff' : '#004c8c', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px', fontWeight: 'bold' }}>{annualReturns.fiveYears}%</span>
+                  </Button>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <Button
+                    variant={formParams.predicted_annualized_return === '' ||
+                              (formParams.predicted_annualized_return &&
+                               formParams.predicted_annualized_return !== annualReturns.all &&
+                               formParams.predicted_annualized_return !== annualReturns.tenYears &&
+                               formParams.predicted_annualized_return !== annualReturns.fiveYears) ? "contained" : "outlined"}
+                    onClick={() => setFormParams(prev => ({ ...prev, predicted_annualized_return: '' }))}
+                    sx={{ width: '100%', borderRadius: 2, transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.05)' } }}
+                  >
+                    Custom
+                  </Button>
+                </Box>
+              </Box>
+            ) : loadingAnnual ? (
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '56px' }}>
+                <CircularProgress size={24} />
+              </Box>
+            ) : (
+              <>
+              </>
+            )}
+            {annualReturns && (
+              formParams.predicted_annualized_return === '' ||
+              (formParams.predicted_annualized_return !== (annualReturns as {all: string, tenYears: string, fiveYears: string}).all &&
+               formParams.predicted_annualized_return !== (annualReturns as {all: string, tenYears: string, fiveYears: string}).tenYears &&
+               formParams.predicted_annualized_return !== (annualReturns as {all: string, tenYears: string, fiveYears: string}).fiveYears)
+            ) && (
+              <Box sx={{ mt: 2 }}>
+                {/* <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 'bold', color: 'primary.dark' }}>
+                  Custom Annualized Return
+                </Typography> */}
+                <TextField
+                  label="Custom Annualized Return (%)"
+                  name="predicted_annualized_return"
+                  type="number"
+                  value={formParams.predicted_annualized_return || ''}
+                  onChange={handleChange}
+                  fullWidth
+                  variant="outlined"
+                  sx={{ bgcolor: 'background.paper' }}
+                  InputProps={{
+                    endAdornment: <Typography sx={{ ml: 1, color: 'text.secondary' }}>%</Typography>,
+                  }}
+                />
+              </Box>
+            )}
           </Box>
           <Button
             type="submit"

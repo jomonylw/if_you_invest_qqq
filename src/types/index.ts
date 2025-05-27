@@ -39,8 +39,8 @@ export interface CalApiParams {
   start_date: string;
   end_date: string;
   initial_investment: string;
-  monthly_investment_date: string;
   monthly_investment_amount: string;
+  predicted_annualized_return?: string;
 }
 
 export interface CalApiResponseData {

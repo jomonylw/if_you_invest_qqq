@@ -19,7 +19,6 @@ export default function Home() {
     start_date: defaultStartDate,
     end_date: defaultEndDate,
     initial_investment: '10000',
-    monthly_investment_date: '1',
     monthly_investment_amount: '1000',
   });
   const [calApiResult, setCalApiResult] = useState<CalApiResponseData | null>(null);
@@ -46,8 +45,8 @@ export default function Home() {
         start_date: submittedParams.start_date,
         end_date: submittedParams.end_date,
         initial_investment: submittedParams.initial_investment,
-        monthly_investment_date: submittedParams.monthly_investment_date,
         monthly_investment_amount: submittedParams.monthly_investment_amount,
+        predicted_annualized_return: submittedParams.predicted_annualized_return || '',
     }).toString();
 
     try {
