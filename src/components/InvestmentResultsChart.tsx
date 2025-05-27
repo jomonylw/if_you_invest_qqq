@@ -67,7 +67,9 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
         'Monthly Investment Amount',
         'Monthly Investment Return',
         'Dividend Amount',
-        'Dividend Return'
+        'Dividend Return',
+        'Total Invested',
+        'Total Return'
       ],
       top: 'bottom',
       padding: [50, 0, 0, 0], // 增加顶部内边距，使图例更靠下
@@ -197,6 +199,50 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
           show: false
         },
         data: monthlyBreakdown.map((item: MonthlyBreakdownItem) => parseFloat(item.dividendReturn))
+      },
+      {
+        name: 'Total Invested',
+        type: 'line',
+        yAxisIndex: 0, // 使用左轴
+        itemStyle: {
+          color: '#4B0082' // 深紫色表示Total Invested
+        },
+        lineStyle: {
+          width: 2
+        },
+        emphasis: {
+          focus: 'series'
+        },
+        label: {
+          show: false
+        },
+        data: monthlyBreakdown.map((item: MonthlyBreakdownItem) =>
+          parseFloat(item.initialInvestmentAmount) +
+          parseFloat(item.monthlyInvestmentAmount)
+        )
+      },
+      {
+        name: 'Total Return',
+        type: 'line',
+        yAxisIndex: 0, // 使用左轴
+        itemStyle: {
+          color: '#008B8B' // 深青色表示Total Return
+        },
+        lineStyle: {
+          width: 2
+        },
+        emphasis: {
+          focus: 'series'
+        },
+        label: {
+          show: false
+        },
+        data: monthlyBreakdown.map((item: MonthlyBreakdownItem) =>
+          parseFloat(item.initialInvestmentReturn) +
+          parseFloat(item.monthlyInvestmentReturn) +
+          parseFloat(item.dividendAmount) +
+          parseFloat(item.dividendReturn)
+        )
       }
     ]
   };
@@ -395,12 +441,30 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                   'Dividend Amount',
                   'Dividend Return'
                 ];
+                const pieDataIndexMap = {
+                  'Initial Investment Amount': 0,
+                  'Initial Investment Return': 3,
+                  'Monthly Investment Amount': 1,
+                  'Monthly Investment Return': 4,
+                  'Dividend Amount': 2,
+                  'Dividend Return': 5
+                };
+                const totalSeries = ['Total Invested', 'Total Return'];
                 const dataIndex = seriesNames.indexOf(params.seriesName);
-                if (dataIndex !== -1 && pieChartRef.current) {
+                const totalIndex = totalSeries.indexOf(params.seriesName);
+                if (dataIndex !== -1) {
+                  const seriesName = params.seriesName as keyof typeof pieDataIndexMap;
+                  const pieDataIndex = pieDataIndexMap[seriesName];
                   pieChartRef.current.getEchartsInstance().dispatchAction({
                     type: 'highlight',
                     seriesIndex: 0,
-                    dataIndex: dataIndex
+                    dataIndex: pieDataIndex
+                  });
+                } else if (totalIndex !== -1) {
+                  pieChartRef.current.getEchartsInstance().dispatchAction({
+                    type: 'highlight',
+                    seriesIndex: 1,
+                    dataIndex: totalIndex
                   });
                 }
               }
@@ -415,12 +479,30 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                   'Dividend Amount',
                   'Dividend Return'
                 ];
+                const pieDataIndexMap = {
+                  'Initial Investment Amount': 0,
+                  'Initial Investment Return': 3,
+                  'Monthly Investment Amount': 1,
+                  'Monthly Investment Return': 4,
+                  'Dividend Amount': 2,
+                  'Dividend Return': 5
+                };
+                const totalSeries = ['Total Invested', 'Total Return'];
                 const dataIndex = seriesNames.indexOf(params.seriesName);
-                if (dataIndex !== -1 && pieChartRef.current) {
+                const totalIndex = totalSeries.indexOf(params.seriesName);
+                if (dataIndex !== -1) {
+                  const seriesName = params.seriesName as keyof typeof pieDataIndexMap;
+                  const pieDataIndex = pieDataIndexMap[seriesName];
                   pieChartRef.current.getEchartsInstance().dispatchAction({
                     type: 'downplay',
                     seriesIndex: 0,
-                    dataIndex: dataIndex
+                    dataIndex: pieDataIndex
+                  });
+                } else if (totalIndex !== -1) {
+                  pieChartRef.current.getEchartsInstance().dispatchAction({
+                    type: 'downplay',
+                    seriesIndex: 1,
+                    dataIndex: totalIndex
                   });
                 }
               }
@@ -524,8 +606,8 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                     value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].initialInvestmentAmount) +
                            parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].monthlyInvestmentAmount) +
                            parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].dividendAmount),
-                    name: 'Total Amount',
-                    itemStyle: { color: '#4B0082' } // 深紫色表示Total Amount，与内层颜色区别且符合主题
+                    name: 'Total Invested',
+                    itemStyle: { color: '#4B0082' } // 深紫色表示Total Invested，与内层颜色区别且符合主题
                   },
                   {
                     value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].initialInvestmentReturn) +
@@ -549,7 +631,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
           className="mt-4"
           ref={pieChartRef}
           onEvents={{
-            'mouseover': (params: { dataIndex: number; name: string }) => {
+            'mouseover': (params: { dataIndex: number; name: string; seriesIndex: number }) => {
               if (barChartRef.current) {
                 const seriesNames = [
                   'Initial Investment Amount',
@@ -559,16 +641,23 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                   'Dividend Amount',
                   'Dividend Return'
                 ];
+                const totalSeries = ['Total Invested', 'Total Return'];
                 const seriesIndex = seriesNames.indexOf(params.name);
+                const totalIndex = totalSeries.indexOf(params.name);
                 if (seriesIndex !== -1 && barChartRef.current) {
                   barChartRef.current.getEchartsInstance().dispatchAction({
                     type: 'highlight',
                     seriesIndex: seriesIndex
                   });
+                } else if (totalIndex !== -1 && barChartRef.current) {
+                  barChartRef.current.getEchartsInstance().dispatchAction({
+                    type: 'highlight',
+                    seriesIndex: totalIndex + 6 // 由于Total Invested和Total Return在series数组中的索引是6和7
+                  });
                 }
               }
             },
-            'mouseout': (params: { dataIndex: number; name: string }) => {
+            'mouseout': (params: { dataIndex: number; name: string; seriesIndex: number }) => {
               if (barChartRef.current) {
                 const seriesNames = [
                   'Initial Investment Amount',
@@ -578,11 +667,18 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                   'Dividend Amount',
                   'Dividend Return'
                 ];
+                const totalSeries = ['Total Invested', 'Total Return'];
                 const seriesIndex = seriesNames.indexOf(params.name);
+                const totalIndex = totalSeries.indexOf(params.name);
                 if (seriesIndex !== -1 && barChartRef.current) {
                   barChartRef.current.getEchartsInstance().dispatchAction({
                     type: 'downplay',
                     seriesIndex: seriesIndex
+                  });
+                } else if (totalIndex !== -1 && barChartRef.current) {
+                  barChartRef.current.getEchartsInstance().dispatchAction({
+                    type: 'downplay',
+                    seriesIndex: totalIndex + 6 // 由于Total Invested和Total Return在series数组中的索引是6和7
                   });
                 }
               }
