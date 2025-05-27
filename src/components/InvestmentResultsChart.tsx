@@ -478,7 +478,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
           option={{
             title: {
               left: 'center',
-              top: 10,
+              top: 50,
               textStyle: {
                 fontSize: 20,
                 fontWeight: 'bold',
@@ -497,14 +497,43 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
             series: [
               {
                 type: 'pie',
-                radius: '50%',
+                radius: ['0%', '40%'],
+                center: ['50%', '35%'],
                 data: [
                   { value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].initialInvestmentAmount), name: 'Initial Investment Amount', itemStyle: { color: '#1976D2' } },
-                  { value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].initialInvestmentReturn), name: 'Initial Investment Return', itemStyle: { color: 'rgba(25, 118, 210, 0.6)' } },
                   { value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].monthlyInvestmentAmount), name: 'Monthly Investment Amount', itemStyle: { color: '#388E3C' } },
-                  { value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].monthlyInvestmentReturn), name: 'Monthly Investment Return', itemStyle: { color: 'rgba(56, 142, 60, 0.6)' } },
                   { value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].dividendAmount), name: 'Dividend Amount', itemStyle: { color: '#F57C00' } },
+                  { value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].initialInvestmentReturn), name: 'Initial Investment Return', itemStyle: { color: 'rgba(25, 118, 210, 0.6)' } },
+                  { value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].monthlyInvestmentReturn), name: 'Monthly Investment Return', itemStyle: { color: 'rgba(56, 142, 60, 0.6)' } },
                   { value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].dividendReturn), name: 'Dividend Return', itemStyle: { color: 'rgba(245, 124, 0, 0.6)' } }
+                ],
+                emphasis: {
+                  itemStyle: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                  }
+                }
+              },
+              {
+                type: 'pie',
+                radius: ['40%', '50%'],
+                center: ['50%', '35%'],
+                data: [
+                  {
+                    value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].initialInvestmentAmount) +
+                           parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].monthlyInvestmentAmount) +
+                           parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].dividendAmount),
+                    name: 'Total Amount',
+                    itemStyle: { color: '#4B0082' } // 深紫色表示Total Amount，与内层颜色区别且符合主题
+                  },
+                  {
+                    value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].initialInvestmentReturn) +
+                           parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].monthlyInvestmentReturn) +
+                           parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].dividendReturn),
+                    name: 'Total Return',
+                    itemStyle: { color: '#008B8B' } // 深青色表示Total Return，与内层颜色区别且符合主题
+                  }
                 ],
                 emphasis: {
                   itemStyle: {
