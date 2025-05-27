@@ -16,7 +16,7 @@ function parseAndValidateParams(searchParams: URLSearchParams): { success: boole
   const initialInvestment = initialInvestmentParam ? parseFloat(initialInvestmentParam) : 0;
   const monthlyInvestmentDate = monthlyInvestmentDateParam ? parseInt(monthlyInvestmentDateParam) : 15;
   const monthlyInvestmentAmount = monthlyInvestmentAmountParam ? parseFloat(monthlyInvestmentAmountParam) : 0;
-  const predictedAnnualizedReturn = predictedAnnualizedReturnParam ? parseFloat(predictedAnnualizedReturnParam) : 8;
+  const predictedAnnualizedReturn = predictedAnnualizedReturnParam ? parseFloat(predictedAnnualizedReturnParam) : 0;
 
   // 验证日期
   if (startDateParam && endDateParam) {

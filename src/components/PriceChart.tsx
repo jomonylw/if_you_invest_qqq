@@ -1,6 +1,7 @@
 "use client";
 import ReactECharts from 'echarts-for-react';
-import { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, memo } from "react"; // Added React and memo
+import LoadingSpinner from './LoadingSpinner'; // Import loading spinner component
 import type { EChartsOption, DataZoomComponentOption } from 'echarts';
 import { format, parseISO, lastDayOfMonth, subMonths } from 'date-fns';
 import type { HisData, DataZoomEventParamsDetail, DataZoomEventParams, PriceChartProps } from '../types';
@@ -13,7 +14,7 @@ const formatCurrency = (value: number | undefined | null): string => {
   return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' }).replace(/^\$/, '');
 };
 
-export default function PriceChart({ calFormStartDate, calFormEndDate, onDatesChange }: PriceChartProps) {
+const PriceChartComponent = ({ calFormStartDate, calFormEndDate, onDatesChange }: PriceChartProps) => {
   const [chartOption, setChartOption] = useState<EChartsOption | null>(null);
   const [allDates, setAllDates] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -452,7 +453,7 @@ export default function PriceChart({ calFormStartDate, calFormEndDate, onDatesCh
   if (loading) {
     return (
       <div className="flex items-center justify-center" style={{ height: '600px' }}>
-        Loading chart data...
+        <LoadingSpinner />
       </div>
     );
   }
@@ -491,4 +492,6 @@ export default function PriceChart({ calFormStartDate, calFormEndDate, onDatesCh
       )}
     </>
   );
-}
+};
+
+export default memo(PriceChartComponent);

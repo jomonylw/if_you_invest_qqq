@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 // Typography, CircularProgress, Alert removed as they are handled by InvestmentForm
 import InvestmentForm from '@/components/InvestmentForm'; // Import new component
+import LoadingSpinner from '@/components/LoadingSpinner'; // Import loading spinner component
 import type { CalApiParams, CalApiResponseData } from '@/types'; // Import types
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -103,6 +104,7 @@ export default function Home() {
         apiError={calApiError}
         onDateChangeInForm={handleDateChangeInPage}
       />
+      {calApiLoading && <LoadingSpinner />}
     </div>
     </LocalizationProvider>
   );

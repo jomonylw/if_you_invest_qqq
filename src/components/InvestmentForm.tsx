@@ -187,7 +187,7 @@ export default function InvestmentForm({
                   <Button
                     variant={formParams.predicted_annualized_return === annualReturns.all ? "contained" : "outlined"}
                     onClick={() => setFormParams(prev => ({ ...prev, predicted_annualized_return: annualReturns.all }))}
-                    sx={{ width: '100%', borderRadius: 2, transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.05)' } }}
+                    sx={{ width: '100%', borderRadius: 2, transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.02)' } }}
                   >
                     All Period: <span style={{ backgroundColor: formParams.predicted_annualized_return === annualReturns.all ? '#004d40' : '#4fc3f7', color: formParams.predicted_annualized_return === annualReturns.all ? '#ffffff' : '#004c8c', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px', fontWeight: 'bold' }}>{annualReturns.all}%</span>
                   </Button>
@@ -196,7 +196,7 @@ export default function InvestmentForm({
                   <Button
                     variant={formParams.predicted_annualized_return === annualReturns.tenYears ? "contained" : "outlined"}
                     onClick={() => setFormParams(prev => ({ ...prev, predicted_annualized_return: annualReturns.tenYears }))}
-                    sx={{ width: '100%', borderRadius: 2, transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.05)' } }}
+                    sx={{ width: '100%', borderRadius: 2, transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.02)' } }}
                   >
                     Recent 10 Years: <span style={{ backgroundColor: formParams.predicted_annualized_return === annualReturns.tenYears ? '#004d40' : '#4fc3f7', color: formParams.predicted_annualized_return === annualReturns.tenYears ? '#ffffff' : '#004c8c', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px', fontWeight: 'bold' }}>{annualReturns.tenYears}%</span>
                   </Button>
@@ -205,7 +205,7 @@ export default function InvestmentForm({
                   <Button
                     variant={formParams.predicted_annualized_return === annualReturns.fiveYears ? "contained" : "outlined"}
                     onClick={() => setFormParams(prev => ({ ...prev, predicted_annualized_return: annualReturns.fiveYears }))}
-                    sx={{ width: '100%', borderRadius: 2, transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.05)' } }}
+                    sx={{ width: '100%', borderRadius: 2, transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.02)' } }}
                   >
                     Recent 5 Years: <span style={{ backgroundColor: formParams.predicted_annualized_return === annualReturns.fiveYears ? '#004d40' : '#4fc3f7', color: formParams.predicted_annualized_return === annualReturns.fiveYears ? '#ffffff' : '#004c8c', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px', fontWeight: 'bold' }}>{annualReturns.fiveYears}%</span>
                   </Button>
@@ -218,7 +218,7 @@ export default function InvestmentForm({
                                formParams.predicted_annualized_return !== annualReturns.tenYears &&
                                formParams.predicted_annualized_return !== annualReturns.fiveYears) ? "contained" : "outlined"}
                     onClick={() => setFormParams(prev => ({ ...prev, predicted_annualized_return: '' }))}
-                    sx={{ width: '100%', borderRadius: 2, transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.05)' } }}
+                    sx={{ width: '100%', borderRadius: 2, transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.02)' } }}
                   >
                     Custom
                   </Button>
