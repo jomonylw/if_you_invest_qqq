@@ -18,8 +18,11 @@ export default function PriceChart({ calFormStartDate, calFormEndDate, onDatesCh
   const [allDates, setAllDates] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   useEffect(() => {
+    if (dataLoaded) return; // 防止重复加载数据
+
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -288,7 +291,8 @@ export default function PriceChart({ calFormStartDate, calFormEndDate, onDatesCh
     };
 
     fetchData();
-  }, [calFormStartDate, calFormEndDate]); // Dependencies for re-initializing chart
+    setDataLoaded(true);
+  }, []); // 仅在组件首次挂载时加载数据
 
   const handleDataZoom = useCallback((params: DataZoomEventParams) => {
     if (allDates.length > 0 && params) {
