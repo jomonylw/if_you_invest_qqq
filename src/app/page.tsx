@@ -6,7 +6,7 @@ import LoadingSpinner from '@/components/LoadingSpinner'; // Import loading spin
 import type { CalApiParams, CalApiResponseData } from '@/types'; // Import types
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { Typography } from '@mui/material';
+// Typography import removed as we're using native HTML elements
 // DatePicker and format, parseISO are now handled within InvestmentForm or not needed here
 import { format, subYears } from 'date-fns';
 
@@ -83,18 +83,13 @@ export default function Home() {
     <LocalizationProvider dateAdapter={AdapterDateFns}>
     <div className="container mx-auto p-4">
       {/* <h1 className="text-2xl font-bold mb-4 text-center">QQQ Investment Calculator</h1> */}
-      <Typography
-        variant="h5"
-        component="h2"
-        sx={{
-          textAlign: 'center',
-          fontWeight: 600,
-          my: 3,
-          color: 'primary.main'
-        }}
-      >
-        QQQ Investment Calculator
-      </Typography>
+      <h1 className="text-3xl font-bold text-center my-6 text-blue-600 flex items-center justify-center gap-2">
+        <span className="animate-pulse">📈</span>
+        <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          If You Invest QQQ
+        </span>
+        <span className="animate-bounce">💰</span>
+      </h1>
 
       <InvestmentForm
         initialFormParams={calFormParams}
