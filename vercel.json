@@ -4,15 +4,5 @@
       "schedule": "0 9 * * *",
       "path": "/api/update"
     }
-  ],
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/node",
-      "config": {
-        "installCommand": "pnpm install",
-        "buildCommand": "npx prisma generate && pnpm run build"
-      }
-    }
   ]
 }
