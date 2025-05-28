@@ -707,6 +707,28 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
           }}
         />
       {/* </CardContent> */}
+      {/* 链接卡片：如何投资 QQQ */}
+      <div className="mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-md p-5 border border-blue-100 hover:shadow-lg hover:border-blue-200 transition-all duration-200">
+        <a
+          href="https://jomonylw.github.io/en/posts/1728723295012-invest-qqq"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ textDecoration: 'none' }}
+          className="block"
+        >
+          <div className="flex items-center">
+            <div className="mr-4 text-2xl">📈</div>
+            <div className="flex-1">
+              <Typography variant="h6" component="h3" sx={{ color: 'primary.main', fontWeight: 'bold', mb: 1 }}>
+                How to Invest in QQQ ETF
+              </Typography>
+              <div className="flex items-center text-blue-600 text-sm font-medium">
+                Read guide <span className="ml-1">→</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
     </div>
   );
 }
