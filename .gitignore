@@ -44,3 +44,4 @@ next-env.d.ts
 /prisma/div-data.json
 /prisma/price-data.json
 /prisma/migrations
+/prisma/seed.js
