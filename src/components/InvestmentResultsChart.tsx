@@ -560,7 +560,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
           option={{
             title: {
               left: 'center',
-              top: 50,
+              top: 10,
               textStyle: {
                 fontSize: 20,
                 fontWeight: 'bold',
@@ -580,7 +580,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
               {
                 type: 'pie',
                 radius: ['0%', '40%'],
-                center: ['50%', '35%'],
+                center: ['50%', '50%'],
                 data: [
                   { value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].initialInvestmentAmount), name: 'Initial Investment Amount', itemStyle: { color: '#1976D2' } },
                   { value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].monthlyInvestmentAmount), name: 'Monthly Investment Amount', itemStyle: { color: '#388E3C' } },
@@ -600,7 +600,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
               {
                 type: 'pie',
                 radius: ['40%', '50%'],
-                center: ['50%', '35%'],
+                center: ['50%', '50%'],
                 data: [
                   {
                     value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].initialInvestmentAmount) +
@@ -627,7 +627,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
               }
             ]
           }}
-          style={{ height: 500, width: '100%' }}
+          style={{ height: 300, width: '100%' }}
           className="mt-4"
           ref={pieChartRef}
           onEvents={{
