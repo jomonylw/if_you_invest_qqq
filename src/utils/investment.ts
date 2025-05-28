@@ -1,14 +1,6 @@
 import { Price } from '@prisma/client';
 
-interface MonthlyBreakdownItem {
-  date: string;
-  initialInvestmentAmount: string;
-  initialInvestmentReturn: string;
-  monthlyInvestmentAmount: string;
-  monthlyInvestmentReturn: string;
-  dividendAmount: string;
-  dividendReturn: string;
-}
+import { MonthlyBreakdownItem } from '@/types';
 
 /**
  * 计算投资增长

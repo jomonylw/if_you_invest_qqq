@@ -1,0 +1,9 @@
+{
+  "crons": [
+    {
+      "name": "daily-update",
+      "schedule": "0 9 * * *",
+      "path": "/api/update"
+    }
+  ]
+}

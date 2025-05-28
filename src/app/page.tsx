@@ -100,7 +100,11 @@ export default function Home() {
         onDateChangeInForm={handleDateChangeInPage}
       />
       {calApiLoading && <LoadingSpinner />}
+      <div className="py-2 text-center text-gray-600 text-sm border-gray-200">
+        <p>© {new Date().getFullYear()} If You Invest QQQ</p>
+      </div>
     </div>
     </LocalizationProvider>
   );
 }
+
