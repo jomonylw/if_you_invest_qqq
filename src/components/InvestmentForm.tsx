@@ -285,7 +285,7 @@ export default function InvestmentForm({
         {apiLoading && (
           <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
             <Typography variant="body1" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
-              <CircularProgress size={20} sx={{ mr: 1 }} /> Calculating...
+              <CircularProgress size={20} sx={{ mr: 1 }} />
             </Typography>
           </Box>
         )}

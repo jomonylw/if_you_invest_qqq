@@ -14,11 +14,5 @@
         "buildCommand": "npx prisma generate && pnpm run build"
       }
     }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/app/page.tsx"
-    }
   ]
 }
