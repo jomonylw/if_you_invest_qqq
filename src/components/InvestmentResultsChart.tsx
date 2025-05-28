@@ -579,7 +579,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
             series: [
               {
                 type: 'pie',
-                radius: ['0%', '40%'],
+                radius: ['0%', '60%'],
                 center: ['50%', '50%'],
                 data: [
                   { value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].initialInvestmentAmount), name: 'Initial Investment Amount', itemStyle: { color: '#1976D2' } },
@@ -599,7 +599,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
               },
               {
                 type: 'pie',
-                radius: ['40%', '50%'],
+                radius: ['60%', '75%'],
                 center: ['50%', '50%'],
                 data: [
                   {
@@ -627,7 +627,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
               }
             ]
           }}
-          style={{ height: 300, width: '100%' }}
+          style={{ height: 400, width: '100%' }}
           className="mt-4"
           ref={pieChartRef}
           onEvents={{
