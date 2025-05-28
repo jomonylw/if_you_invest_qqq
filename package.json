@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "postinstall": "node ./scripts/write-ca-cert.js || exit 0",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
