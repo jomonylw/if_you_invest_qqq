@@ -18,7 +18,7 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/"
+      "dest": "/app/page.tsx"
     }
   ]
 }
