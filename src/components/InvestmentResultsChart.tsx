@@ -428,6 +428,15 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                     shadowBlur: 10,
                     shadowOffsetX: 0,
                     shadowColor: 'rgba(0, 0, 0, 0.5)'
+                  },
+                  label: {
+                    show: true,
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                    color: '#FFFFFF', // 高亮时文字颜色设置为白色
+                    backgroundColor: 'rgba(50, 50, 50, 0.9)', // 标签背景色为深色半透明
+                    borderRadius: 5, // 圆角矩形
+                    padding: [5, 10] // 内边距，上下5，左右10
                   }
                 }
               },
@@ -456,6 +465,15 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                     shadowBlur: 10,
                     shadowOffsetX: 0,
                     shadowColor: 'rgba(0, 0, 0, 0.5)'
+                  },
+                  label: {
+                    show: true,
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                    color: '#FFFFFF', // 高亮时文字颜色设置为白色
+                    backgroundColor: 'rgba(50, 50, 50, 0.9)', // 标签背景色为深色半透明
+                    borderRadius: 5, // 圆角矩形
+                    padding: [5, 10] // 内边距，上下5，左右10
                   }
                 }
               }
