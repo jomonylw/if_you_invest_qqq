@@ -32,7 +32,7 @@ export default function WealthGrowthComparison({ results }: InvestmentResultsCha
   return (
     <>
       {/* Wealth Growth Visual Comparison Area */}
-      <div className={`mb-8 bg-gradient-to-r from-blue-50 ${parseFloat(nominalTotalReturn) >= 0 ? 'to-green-50' : 'to-red-50'} p-6 rounded-xl shadow-md`}>
+      <div className={`mb-8 bg-gradient-to-r from-blue-50 ${parseFloat(nominalTotalReturn) >= 0 ? 'to-green-50' : 'to-red-50'} p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200`}>
         <Typography variant="h6" className="text-center mb-3 font-bold text-gray-700 pb-2" sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' }, textShadow: '1px 1px 2px rgba(0,0,0,0.2)' }}>Wealth Growth Comparison</Typography>
         
         <div className="flex flex-col md:flex-row justify-between items-center w-full">
