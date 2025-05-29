@@ -479,7 +479,7 @@ const PriceChartComponent = ({ calFormStartDate, calFormEndDate, onDatesChange }
           color: 'primary.main'
         }}
       >
-        QQQ Historical Price Data
+        QQQ Historical Price
       </Typography>
       {chartOption && (
         <ReactECharts

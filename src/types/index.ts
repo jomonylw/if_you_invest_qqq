@@ -44,6 +44,14 @@ export interface CalApiParams {
 }
 
 export interface CalApiResponseData {
+  input: {
+    startDate: string | null;
+    endDate: string | null;
+    initialInvestment: number;
+    monthlyInvestmentDate: number;
+    monthlyInvestmentAmount: number;
+    predictedAnnualizedReturn: number;
+  };
   nominalPriceReturn: string;
   annualizedPriceReturn: string;
   nominalPriceReturnWithDividends: string;
@@ -55,6 +63,7 @@ export interface CalApiResponseData {
   nominalTotalReturn: string;
   annualizedTotalReturn: string;
   investmentGrewToTotalReturn: string;
+  predictedAnnualizedReturn: string;
   monthlyBreakdown: MonthlyBreakdownItem[];
 }
 

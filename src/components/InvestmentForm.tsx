@@ -78,7 +78,12 @@ export default function InvestmentForm({
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    await onFormSubmit(formParams);
+    const updatedParams = {
+      ...formParams,
+      predicted_annualized_return: formParams.predicted_annualized_return || '0',
+      monthly_investment_amount: formParams.monthly_investment_amount || '0'
+    };
+    await onFormSubmit(updatedParams);
   };
 
   return (
@@ -105,11 +110,11 @@ export default function InvestmentForm({
         </Typography>
 
         <form onSubmit={handleSubmit} className="mt-6">
-          <Box sx={{ bgcolor: 'background.default', p: 3, borderRadius: 2, boxShadow: 1, mb: 4 }}>
+          <Box sx={{ bgcolor: 'background.default', p: 3, borderRadius: 2, boxShadow: 1, mb: 2 }}>
             <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.dark' }}>
               Investment Date Range
             </Typography>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <DatePicker
               label="Start Date"
               value={formParams.start_date ? parseISO(formParams.start_date) : null}
@@ -142,11 +147,11 @@ export default function InvestmentForm({
             />
             </div>
           </Box>
-          <Box sx={{ bgcolor: 'background.default', p: 3, borderRadius: 2, boxShadow: 1, mb: 4 }}>
+          <Box sx={{ bgcolor: 'background.default', p: 3, borderRadius: 2, boxShadow: 1, mb: 2 }}>
             <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.dark' }}>
               Investment Amount & Plan
             </Typography>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <TextField
                 label="Initial Investment ($)"
                 name="initial_investment"
@@ -182,7 +187,7 @@ export default function InvestmentForm({
               Predicted Annualized Return
             </Typography>
             {annualReturns ? (
-              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 2, justifyContent: 'center' }}>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 1, justifyContent: 'center' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                   <Button
                     variant={formParams.predicted_annualized_return === annualReturns.all ? "contained" : "outlined"}
@@ -269,7 +274,7 @@ export default function InvestmentForm({
               mt: 4,
               py: 2,
               fontWeight: 'bold',
-              fontSize: '1.1rem',
+              fontSize: { xs: '1rem', sm: '1.1rem' },
               boxShadow: '0 4px 14px rgba(0, 123, 255, 0.3)',
               '&:hover': {
                 boxShadow: '0 6px 20px rgba(0, 123, 255, 0.4)',

@@ -81,9 +81,9 @@ export default function Home() {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-2 md:p-4">
       {/* <h1 className="text-2xl font-bold mb-4 text-center">QQQ Investment Calculator</h1> */}
-      <h1 className="text-3xl font-bold text-center my-6 text-blue-600 flex items-center justify-center gap-2">
+      <h1 className="text-3xl md:text-3xl font-bold text-center my-6 text-blue-600 flex items-center justify-center gap-2">
         <span className="animate-pulse">📈</span>
         <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
           If You Invest QQQ
@@ -100,7 +100,7 @@ export default function Home() {
         onDateChangeInForm={handleDateChangeInPage}
       />
       {/* {calApiLoading && <LoadingSpinner />} */}
-      <div className="py-2 text-center text-gray-600 text-sm border-gray-200">
+      <div className="py-1 md:py-2 text-center text-gray-600 text-xs md:text-sm border-gray-200">
         <p>© {new Date().getFullYear()} If You Invest QQQ</p>
       </div>
     </div>

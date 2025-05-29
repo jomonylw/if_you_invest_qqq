@@ -222,6 +222,14 @@ export async function GET(request: Request) {
     return NextResponse.json({
       success: true,
       data: {
+        input: {
+          startDate: startDateParam,
+          endDate: endDateParam,
+          initialInvestment,
+          monthlyInvestmentDate,
+          monthlyInvestmentAmount,
+          predictedAnnualizedReturn
+        },
         nominalPriceReturn: nominalPriceReturn.toFixed(4), // 名义价格回报率（仅考虑价格变化，不含股息）
         annualizedPriceReturn: annualizedPriceReturn.toFixed(4), // 年化价格回报率（仅考虑价格变化，不含股息）
         //----
