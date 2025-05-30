@@ -670,7 +670,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                 // 更新饼状图标题以反映当前高亮的系列
                 const titleElement = document.getElementById('pie-chart-title');
                 if (titleElement) {
-                  titleElement.textContent = params.name + ' Breakdown';
+                  titleElement.textContent = params.name;
                 }
               }
             },
