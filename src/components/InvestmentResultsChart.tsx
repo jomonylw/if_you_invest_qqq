@@ -265,7 +265,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
           className="mt-4"
           ref={barChartRef}
           onEvents={{
-            'mouseover': (params: { seriesName: string }) => {
+            'mouseover': (params: { seriesName: string; dataIndex: number }) => {
               if (pieChartRef.current) {
                 const seriesNames = [
                   'Initial Investment Amount',
@@ -300,6 +300,86 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                     seriesIndex: 1,
                     dataIndex: totalIndex
                   });
+                }
+                // 更新饼状图数据以反映当前日期的投资分解
+                const dateIndex = params.dataIndex;
+                const currentData = monthlyBreakdown[dateIndex];
+                const pieData = [
+                  { value: parseFloat(currentData.initialInvestmentAmount), name: 'Initial Investment Amount', itemStyle: { color: '#1976D2' } },
+                  { value: parseFloat(currentData.monthlyInvestmentAmount), name: 'Monthly Investment Amount', itemStyle: { color: '#388E3C' } },
+                  { value: parseFloat(currentData.dividendAmount), name: 'Dividend Amount', itemStyle: { color: '#F57C00' } },
+                  { value: parseFloat(currentData.initialInvestmentReturn), name: 'Initial Investment Return', itemStyle: { color: 'rgba(25, 118, 210, 0.6)' } },
+                  { value: parseFloat(currentData.monthlyInvestmentReturn), name: 'Monthly Investment Return', itemStyle: { color: 'rgba(56, 142, 60, 0.6)' } },
+                  { value: parseFloat(currentData.dividendReturn), name: 'Dividend Return', itemStyle: { color: 'rgba(245, 124, 0, 0.6)' } }
+                ];
+                const totalPieData = [
+                  {
+                    value: parseFloat(currentData.initialInvestmentAmount) +
+                           parseFloat(currentData.monthlyInvestmentAmount) +
+                           parseFloat(currentData.dividendAmount),
+                    name: 'Total Invested',
+                    itemStyle: { color: '#4B0082' }
+                  },
+                  {
+                    value: parseFloat(currentData.initialInvestmentReturn) +
+                           parseFloat(currentData.monthlyInvestmentReturn) +
+                           parseFloat(currentData.dividendReturn),
+                    name: 'Total Return',
+                    itemStyle: { color: '#008B8B' }
+                  }
+                ];
+                pieChartRef.current.getEchartsInstance().setOption({
+                  series: [
+                    {
+                      type: 'pie',
+                      radius: ['0%', '60%'],
+                      center: ['50%', '50%'],
+                      data: pieData,
+                      emphasis: {
+                        itemStyle: {
+                          shadowBlur: 10,
+                          shadowOffsetX: 0,
+                          shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        },
+                        label: {
+                          show: true,
+                          fontSize: 16,
+                          fontWeight: 'bold',
+                          color: '#FFFFFF',
+                          backgroundColor: 'rgba(50, 50, 50, 0.9)',
+                          borderRadius: 5,
+                          padding: [5, 10]
+                        }
+                      }
+                    },
+                    {
+                      type: 'pie',
+                      radius: ['60%', '75%'],
+                      center: ['50%', '50%'],
+                      data: totalPieData,
+                      emphasis: {
+                        itemStyle: {
+                          shadowBlur: 10,
+                          shadowOffsetX: 0,
+                          shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        },
+                        label: {
+                          show: true,
+                          fontSize: 16,
+                          fontWeight: 'bold',
+                          color: '#FFFFFF',
+                          backgroundColor: 'rgba(50, 50, 50, 0.9)',
+                          borderRadius: 5,
+                          padding: [5, 10]
+                        }
+                      }
+                    }
+                  ]
+                });
+                // 更新饼状图标题以反映当前日期
+                const titleElement = document.getElementById('pie-chart-title');
+                if (titleElement) {
+                  titleElement.textContent = currentData.date + ' Breakdown';
                 }
               }
             },
@@ -338,6 +418,85 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                     seriesIndex: 1,
                     dataIndex: totalIndex
                   });
+                }
+                // 恢复饼状图数据为最后一天的数据
+                const lastData = monthlyBreakdown[monthlyBreakdown.length - 1];
+                const pieData = [
+                  { value: parseFloat(lastData.initialInvestmentAmount), name: 'Initial Investment Amount', itemStyle: { color: '#1976D2' } },
+                  { value: parseFloat(lastData.monthlyInvestmentAmount), name: 'Monthly Investment Amount', itemStyle: { color: '#388E3C' } },
+                  { value: parseFloat(lastData.dividendAmount), name: 'Dividend Amount', itemStyle: { color: '#F57C00' } },
+                  { value: parseFloat(lastData.initialInvestmentReturn), name: 'Initial Investment Return', itemStyle: { color: 'rgba(25, 118, 210, 0.6)' } },
+                  { value: parseFloat(lastData.monthlyInvestmentReturn), name: 'Monthly Investment Return', itemStyle: { color: 'rgba(56, 142, 60, 0.6)' } },
+                  { value: parseFloat(lastData.dividendReturn), name: 'Dividend Return', itemStyle: { color: 'rgba(245, 124, 0, 0.6)' } }
+                ];
+                const totalPieData = [
+                  {
+                    value: parseFloat(lastData.initialInvestmentAmount) +
+                           parseFloat(lastData.monthlyInvestmentAmount) +
+                           parseFloat(lastData.dividendAmount),
+                    name: 'Total Invested',
+                    itemStyle: { color: '#4B0082' }
+                  },
+                  {
+                    value: parseFloat(lastData.initialInvestmentReturn) +
+                           parseFloat(lastData.monthlyInvestmentReturn) +
+                           parseFloat(lastData.dividendReturn),
+                    name: 'Total Return',
+                    itemStyle: { color: '#008B8B' }
+                  }
+                ];
+                pieChartRef.current.getEchartsInstance().setOption({
+                  series: [
+                    {
+                      type: 'pie',
+                      radius: ['0%', '60%'],
+                      center: ['50%', '50%'],
+                      data: pieData,
+                      emphasis: {
+                        itemStyle: {
+                          shadowBlur: 10,
+                          shadowOffsetX: 0,
+                          shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        },
+                        label: {
+                          show: true,
+                          fontSize: 16,
+                          fontWeight: 'bold',
+                          color: '#FFFFFF',
+                          backgroundColor: 'rgba(50, 50, 50, 0.9)',
+                          borderRadius: 5,
+                          padding: [5, 10]
+                        }
+                      }
+                    },
+                    {
+                      type: 'pie',
+                      radius: ['60%', '75%'],
+                      center: ['50%', '50%'],
+                      data: totalPieData,
+                      emphasis: {
+                        itemStyle: {
+                          shadowBlur: 10,
+                          shadowOffsetX: 0,
+                          shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        },
+                        label: {
+                          show: true,
+                          fontSize: 16,
+                          fontWeight: 'bold',
+                          color: '#FFFFFF',
+                          backgroundColor: 'rgba(50, 50, 50, 0.9)',
+                          borderRadius: 5,
+                          padding: [5, 10]
+                        }
+                      }
+                    }
+                  ]
+                });
+                // 恢复饼状图标题为默认值（最后一天的日期）
+                const titleElement = document.getElementById('pie-chart-title');
+                if (titleElement) {
+                  titleElement.textContent = lastData.date + ' Breakdown';
                 }
               }
             },
@@ -381,6 +540,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
         <Typography
           variant="h5"
           component="h2"
+          id="pie-chart-title"
           sx={{
             textAlign: 'center',
             fontWeight: 600,
@@ -388,7 +548,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
             color: 'primary.main'
           }}
         >
-          Final Day Breakdown
+          {monthlyBreakdown[monthlyBreakdown.length - 1].date} Breakdown
         </Typography>
         <ReactECharts
           option={{
@@ -507,6 +667,11 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                     seriesIndex: totalIndex + 6 // 由于Total Invested和Total Return在series数组中的索引是6和7
                   });
                 }
+                // 更新饼状图标题以反映当前高亮的系列
+                const titleElement = document.getElementById('pie-chart-title');
+                if (titleElement) {
+                  titleElement.textContent = params.name + ' Breakdown';
+                }
               }
             },
             'mouseout': (params: { dataIndex: number; name: string; seriesIndex: number }) => {
@@ -532,6 +697,11 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                     type: 'downplay',
                     seriesIndex: totalIndex + 6 // 由于Total Invested和Total Return在series数组中的索引是6和7
                   });
+                }
+                // 恢复饼状图标题为默认值（最后一天的日期）
+                const titleElement = document.getElementById('pie-chart-title');
+                if (titleElement) {
+                  titleElement.textContent = monthlyBreakdown[monthlyBreakdown.length - 1].date + ' Breakdown';
                 }
               }
             },

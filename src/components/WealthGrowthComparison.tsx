@@ -49,6 +49,34 @@ export default function WealthGrowthComparison({ results }: InvestmentResultsCha
           
           {/* Arrow and Growth Rate */}
           <div className="flex flex-col items-center py-3 px-1">
+            <div className="mb-2">
+              {(() => {
+                if (input.startDate && input.endDate) {
+                  const start = new Date(input.startDate);
+                  const end = new Date(input.endDate);
+                  const diffTime = end.getTime() - start.getTime();
+                  const diffYears = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 365));
+                  const diffMonths = Math.floor((diffTime % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24 * 30));
+                  return (
+                    <div className={`inline-block px-3 py-1.5 rounded-full ${
+                      parseFloat(nominalTotalReturn) >= 0
+                        ? 'bg-green-50 border border-green-200'
+                        : 'bg-red-50 border border-red-200'
+                    }`}>
+                      <Typography variant="h6" 
+                        className={`${parseFloat(nominalTotalReturn) >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                        sx={{
+                        fontSize: { xs: '2rem', sm: '1.1rem' },
+                        fontWeight: 'bold',
+                      }}>
+                        {`${diffYears > 0 ? diffYears + ' yr' + (diffYears > 1 ? 's' : '') : ''} ${diffMonths > 0 ? diffMonths + ' mo' + (diffMonths > 1 ? 's' : '') : ''}`.trim()}
+                      </Typography>
+                    </div>
+                  );
+                }
+                return '';
+              })()}
+            </div>
             <Typography
               variant="h4"
               className={`transform rotate-90 md:rotate-0 ${parseFloat(nominalTotalReturn) >= 0 ? 'text-green-600' : 'text-red-600'}`}
