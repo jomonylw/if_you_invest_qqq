@@ -66,7 +66,7 @@ export default function WealthGrowthComparison({ results }: InvestmentResultsCha
                       <Typography variant="h6" 
                         className={`${parseFloat(nominalTotalReturn) >= 0 ? 'text-green-600' : 'text-red-600'}`}
                         sx={{
-                        fontSize: { xs: '2rem', sm: '1.1rem' },
+                        fontSize: { xs: '1.1rem', sm: '1.1rem' },
                         fontWeight: 'bold',
                       }}>
                         {`${diffYears > 0 ? diffYears + ' yr' + (diffYears > 1 ? 's' : '') : ''} ${diffMonths > 0 ? diffMonths + ' mo' + (diffMonths > 1 ? 's' : '') : ''}`.trim()}
