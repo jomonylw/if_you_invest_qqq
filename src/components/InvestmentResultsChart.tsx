@@ -8,12 +8,40 @@ import type { InvestmentResultsChartProps, MonthlyBreakdownItem } from '../types
 export default function InvestmentResultsChart({ results }: InvestmentResultsChartProps) {
   const barChartRef = React.useRef<ReactECharts>(null);
   const pieChartRef = React.useRef<ReactECharts>(null);
+  const [pieChartTitle, setPieChartTitle] = React.useState('');
+  const titleUpdateTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const {
     monthlyBreakdown,
   } = results;
 
+  // Initialize pie chart title
+  React.useEffect(() => {
+    if (monthlyBreakdown && monthlyBreakdown.length > 0) {
+      setPieChartTitle(formatDateWithTag(monthlyBreakdown[monthlyBreakdown.length - 1].date));
+    }
+  }, [monthlyBreakdown]);
+
+  // Debounced title update function to prevent rapid changes
+  const updatePieChartTitle = React.useCallback((newTitle: string) => {
+    if (titleUpdateTimeoutRef.current) {
+      clearTimeout(titleUpdateTimeoutRef.current);
+    }
+    titleUpdateTimeoutRef.current = setTimeout(() => {
+      setPieChartTitle(newTitle);
+    }, 50); // Small delay to prevent rapid updates
+  }, []);
+
+  // Cleanup timeout on unmount
+  React.useEffect(() => {
+    return () => {
+      if (titleUpdateTimeoutRef.current) {
+        clearTimeout(titleUpdateTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // Helper function to format date with tag-like styling
-  const formatDateWithTag = (date: string, suffix: string = ' Breakdown') => {
+  const formatDateWithTag = (date: string, suffix: string = 'Breakdown') => {
     return `<span style="
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
@@ -21,14 +49,47 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
       border-radius: 10px;
       font-weight: 600;
       font-size: 1.5rem;
-      margin-right: 0px;
+      margin-right: 8px;
       display: inline-block;
       box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
       vertical-align: middle;
+      min-height: 2rem;
+      line-height: 2rem;
+      transition: all 0.2s ease-in-out;
+      white-space: nowrap;
     ">${date}</span><span style="
       font-weight: 600;
       font-size: 1.5rem;
       vertical-align: middle;
+      min-height: 2rem;
+      line-height: 2rem;
+      transition: all 0.2s ease-in-out;
+      white-space: nowrap;
+    ">${suffix}</span>`;
+  };
+
+  // Helper function to format date without styling but with consistent layout
+  const formatDatePlain = (date: string, suffix: string = 'Breakdown') => {
+    return `<span style="
+      font-weight: 600;
+      font-size: 1.5rem;
+      vertical-align: middle;
+      min-height: 2rem;
+      line-height: 2rem;
+      display: inline-block;
+      margin-right: 8px;
+      transition: all 0.2s ease-in-out;
+      white-space: nowrap;
+      color: #1976d2;
+    ">${date}</span><span style="
+      font-weight: 600;
+      font-size: 1.5rem;
+      vertical-align: middle;
+      min-height: 2rem;
+      line-height: 2rem;
+      transition: all 0.2s ease-in-out;
+      white-space: nowrap;
+      color: #1976d2;
     ">${suffix}</span>`;
   };
 
@@ -356,9 +417,21 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                     seriesIndex: 0,
                     dataIndex: pieDataIndex
                   });
+                  // Show tooltip for the highlighted pie chart segment
+                  pieChartRef.current.getEchartsInstance().dispatchAction({
+                    type: 'showTip',
+                    seriesIndex: 0,
+                    dataIndex: pieDataIndex
+                  });
                 } else if (totalIndex !== -1) {
                   pieChartRef.current.getEchartsInstance().dispatchAction({
                     type: 'highlight',
+                    seriesIndex: 1,
+                    dataIndex: totalIndex
+                  });
+                  // Show tooltip for the highlighted pie chart segment
+                  pieChartRef.current.getEchartsInstance().dispatchAction({
+                    type: 'showTip',
                     seriesIndex: 1,
                     dataIndex: totalIndex
                   });
@@ -459,10 +532,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                   ]
                 });
                 // 更新饼状图标题以反映当前日期
-                const titleElement = document.getElementById('pie-chart-title');
-                if (titleElement) {
-                  titleElement.innerHTML = formatDateWithTag(currentData.date);
-                }
+                updatePieChartTitle(formatDateWithTag(currentData.date));
               }
             },
             'mouseout': (params: { seriesName: string }) => {
@@ -494,11 +564,19 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                     seriesIndex: 0,
                     dataIndex: pieDataIndex
                   });
+                  // Hide tooltip for the pie chart segment
+                  pieChartRef.current.getEchartsInstance().dispatchAction({
+                    type: 'hideTip'
+                  });
                 } else if (totalIndex !== -1) {
                   pieChartRef.current.getEchartsInstance().dispatchAction({
                     type: 'downplay',
                     seriesIndex: 1,
                     dataIndex: totalIndex
+                  });
+                  // Hide tooltip for the pie chart segment
+                  pieChartRef.current.getEchartsInstance().dispatchAction({
+                    type: 'hideTip'
                   });
                 }
                 // 恢复饼状图数据为最后一天的数据
@@ -596,10 +674,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                   ]
                 });
                 // 恢复饼状图标题为默认值（最后一天的日期）
-                const titleElement = document.getElementById('pie-chart-title');
-                if (titleElement) {
-                  titleElement.innerHTML = formatDateWithTag(lastData.date);
-                }
+                updatePieChartTitle(formatDateWithTag(lastData.date));
               }
             },
             'legendselectchanged': (params: { name: string; selected: { [key: string]: boolean } }) => {
@@ -651,10 +726,19 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
             textAlign: 'center',
             fontWeight: 600,
             my: 2,
-            color: 'primary.main'
+            color: 'primary.main',
+            minHeight: '3rem', // Ensure consistent height
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.2s ease-in-out',
+            overflow: 'hidden', // Prevent layout shifts
+            '& span': {
+              transition: 'all 0.2s ease-in-out'
+            }
           }}
           dangerouslySetInnerHTML={{
-            __html: formatDateWithTag(monthlyBreakdown[monthlyBreakdown.length - 1].date)
+            __html: pieChartTitle || formatDateWithTag(monthlyBreakdown[monthlyBreakdown.length - 1].date)
           }}
         />
         <ReactECharts
@@ -841,10 +925,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                   });
                 }
                 // 更新饼状图标题以反映当前高亮的系列
-                const titleElement = document.getElementById('pie-chart-title');
-                if (titleElement) {
-                  titleElement.textContent = params.name;
-                }
+                updatePieChartTitle(formatDatePlain(params.name, ''));
               }
             },
             'mouseout': (params: { dataIndex: number; name: string; seriesIndex: number }) => {
@@ -872,10 +953,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                   });
                 }
                 // 恢复饼状图标题为默认值（最后一天的日期）
-                const titleElement = document.getElementById('pie-chart-title');
-                if (titleElement) {
-                  titleElement.innerHTML = formatDateWithTag(monthlyBreakdown[monthlyBreakdown.length - 1].date);
-                }
+                updatePieChartTitle(formatDateWithTag(monthlyBreakdown[monthlyBreakdown.length - 1].date));
               }
             },
             'legendselectchanged': (params: { name: string; selected: { [key: string]: boolean } }) => {
