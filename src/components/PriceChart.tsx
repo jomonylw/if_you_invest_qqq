@@ -469,7 +469,7 @@ const PriceChartComponent = ({ calFormStartDate, calFormEndDate, onDatesChange }
   return (
     <>
       {/* <h2 className="text-xl font-semibold mb-4 text-center">QQQ Historical Price Data</h2> */}
-      <Typography
+      {/* <Typography
         variant="h5"
         component="h2"
         sx={{
@@ -480,6 +480,32 @@ const PriceChartComponent = ({ calFormStartDate, calFormEndDate, onDatesChange }
         }}
       >
         QQQ Historical Price
+      </Typography> */}
+      <Typography
+        variant="h4"
+        component="h2"
+        sx={{
+          textAlign: 'center',
+          fontWeight: 700,
+          my: { xs: 2, md: 4 },
+          fontSize: { xs: '1.5rem', sm: '2rem', md: '2.25rem' },
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 2
+        }}
+      >
+        <span style={{ fontSize: 'inherit' }}>📈</span>
+        <span
+          style={{
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            color: 'transparent'
+          }}
+        >
+          QQQ Historical Price
+        </span>
       </Typography>
       {chartOption && (
         <ReactECharts

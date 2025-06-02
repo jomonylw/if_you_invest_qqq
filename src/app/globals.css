@@ -3,6 +3,11 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  --card-shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
 @theme inline {
@@ -16,28 +21,217 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --primary-gradient: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+    --secondary-gradient: linear-gradient(135deg, #553c9a 0%, #b794f6 100%);
+    --success-gradient: linear-gradient(135deg, #2b6cb0 0%, #3182ce 100%);
   }
 }
 
 body {
-  background: linear-gradient(to bottom, #2c3e50, #3498db);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background-attachment: fixed;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* 现代化滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* 玻璃态效果 */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+/* 动画效果 */
+.fade-in {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-up {
+  animation: slideUp 0.8s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 悬浮效果 */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* 标题增强样式 */
+.title-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background-size: 200% 200%;
+  animation: gradientShift 4s ease-in-out infinite;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* 标题悬浮效果 */
+.title-hover-effect {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.title-hover-effect:hover {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 8px 16px rgba(102, 126, 234, 0.3));
+}
+
+/* 副标题玻璃态效果增强 */
+.subtitle-glass {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+  transition: all 0.3s ease;
+}
+
+.subtitle-glass:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 40px rgba(31, 38, 135, 0.3);
 }
 
 /* 移动端响应式设计 */
 @media (max-width: 768px) {
   body {
     font-size: 14px;
+    background-attachment: scroll;
   }
-  
+
   .container {
     padding: 0 1rem;
   }
-  
-  h1 {
-    font-size: 1.5rem;
-    margin-top: 1.5rem;
-    margin-bottom: 1.5rem;
+
+  /* 移动端标题优化 */
+  .title-mobile-optimize {
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  /* 移动端副标题优化 */
+  .subtitle-mobile-optimize {
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+  }
+
+  /* 移动端图表优化 */
+  .echarts-for-react {
+    height: 300px !important;
+  }
+
+  /* 移动端卡片间距优化 */
+  .mobile-card-spacing {
+    margin: 0.5rem 0;
+    padding: 1rem;
   }
 }
+
+@media (max-width: 480px) {
+  body {
+    font-size: 13px;
+  }
+
+  .container {
+    padding: 0 0.5rem;
+  }
+
+  /* 超小屏幕标题优化 */
+  .title-mobile-optimize {
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+  }
+
+  /* 超小屏幕副标题优化 */
+  .subtitle-mobile-optimize {
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.75rem;
+    margin: 0 0.5rem;
+  }
+
+  /* 超小屏幕图表优化 */
+  .echarts-for-react {
+    height: 250px !important;
+  }
+}
+
+/* 平板端优化 */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .container {
+    padding: 0 2rem;
+  }
+
+  .echarts-for-react {
+    height: 400px !important;
+  }
+}
+
+/* 大屏幕优化 */
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1200px;
+  }
+
+  .echarts-for-react {
+    height: 500px !important;
+  }
+}
+
+

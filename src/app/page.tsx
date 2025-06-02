@@ -82,14 +82,26 @@ export default function Home() {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
     <div className="container mx-auto p-2 md:p-4">
-      {/* <h1 className="text-2xl font-bold mb-4 text-center">QQQ Investment Calculator</h1> */}
-      <h1 className="text-3xl md:text-3xl font-bold text-center my-6 text-blue-600 flex items-center justify-center gap-2">
-        <span className="animate-pulse">📈</span>
-        <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          If You Invest QQQ
-        </span>
-        <span className="animate-bounce">💰</span>
-      </h1>
+      {/* Enhanced Header Section */}
+      <header className="text-center mb-8 md:mb-12 mt-6 md:mt-8 lg:mt-12">
+        {/* Main Title */}
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold flex items-center justify-center gap-2 md:gap-3 mb-4 md:mb-6 fade-in title-hover-effect title-mobile-optimize">
+          <span className="animate-pulse text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl filter drop-shadow-lg">📈</span>
+          <span className="title-gradient font-extrabold tracking-tight">
+            If You Invest QQQ
+          </span>
+          <span className="animate-bounce text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl filter drop-shadow-lg">💰</span>
+        </h1>
+
+        {/* Subtitle */}
+        <div className="mx-auto max-w-2xl slide-up">
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 dark:text-gray-300 font-medium leading-relaxed">
+            {/* <span className="inline-block mr-2 animate-pulse">✨</span> */}
+            <span className="font-semibold">Discover the potential of your QQQ investments</span>
+            {/* <span className="inline-block ml-2 animate-pulse">🚀</span> */}
+          </p>
+        </div>
+      </header>
 
       <InvestmentForm
         initialFormParams={calFormParams}
