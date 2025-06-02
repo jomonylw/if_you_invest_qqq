@@ -5,43 +5,35 @@ import ReactECharts from 'echarts-for-react';
 import WealthGrowthComparison from './WealthGrowthComparison';
 import type { InvestmentResultsChartProps, MonthlyBreakdownItem } from '../types';
 
+const PIE_SERIES_ID_DETAIL = 'detailPie';
+const PIE_SERIES_ID_TOTAL = 'totalPie';
+
+// Define pieDataIndexMap at a scope accessible by helper functions
+const pieDataIndexMap: { [key: string]: number } = {
+  'Initial Investment Amount': 0,
+  'Monthly Investment Amount': 1,
+  'Dividend Amount': 2,
+  'Initial Investment Return': 3,
+  'Monthly Investment Return': 4,
+  'Dividend Return': 5
+};
+
+const totalPieSeriesNames = ['Total Invested', 'Total Return'];
+
 export default function InvestmentResultsChart({ results }: InvestmentResultsChartProps) {
   const barChartRef = React.useRef<ReactECharts>(null);
   const pieChartRef = React.useRef<ReactECharts>(null);
-  const [pieChartTitle, setPieChartTitle] = React.useState('');
-  const titleUpdateTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  // Refs to manage interaction state
+  const interactionStateRef = React.useRef<'bar_hover' | null>(null);
+  const latestAxisDataIndexRef = React.useRef<number | null>(null);
+
   const {
     monthlyBreakdown,
   } = results;
 
-  // Initialize pie chart title
-  React.useEffect(() => {
-    if (monthlyBreakdown && monthlyBreakdown.length > 0) {
-      setPieChartTitle(formatDateWithTag(monthlyBreakdown[monthlyBreakdown.length - 1].date));
-    }
-  }, [monthlyBreakdown]);
-
-  // Debounced title update function to prevent rapid changes
-  const updatePieChartTitle = React.useCallback((newTitle: string) => {
-    if (titleUpdateTimeoutRef.current) {
-      clearTimeout(titleUpdateTimeoutRef.current);
-    }
-    titleUpdateTimeoutRef.current = setTimeout(() => {
-      setPieChartTitle(newTitle);
-    }, 50); // Small delay to prevent rapid updates
-  }, []);
-
-  // Cleanup timeout on unmount
-  React.useEffect(() => {
-    return () => {
-      if (titleUpdateTimeoutRef.current) {
-        clearTimeout(titleUpdateTimeoutRef.current);
-      }
-    };
-  }, []);
-
   // Helper function to format date with tag-like styling
-  const formatDateWithTag = (date: string, suffix: string = 'Breakdown') => {
+  const formatDateWithTag = (date: string, suffix: string = ' Breakdown') => {
     return `<span style="
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
@@ -49,49 +41,83 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
       border-radius: 10px;
       font-weight: 600;
       font-size: 1.5rem;
-      margin-right: 8px;
+      margin-right: 0px;
       display: inline-block;
       box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
       vertical-align: middle;
-      min-height: 2rem;
-      line-height: 2rem;
-      transition: all 0.2s ease-in-out;
-      white-space: nowrap;
     ">${date}</span><span style="
       font-weight: 600;
       font-size: 1.5rem;
       vertical-align: middle;
-      min-height: 2rem;
-      line-height: 2rem;
-      transition: all 0.2s ease-in-out;
-      white-space: nowrap;
     ">${suffix}</span>`;
   };
 
-  // Helper function to format date without styling but with consistent layout
-  const formatDatePlain = (date: string, suffix: string = 'Breakdown') => {
-    return `<span style="
-      font-weight: 600;
-      font-size: 1.5rem;
-      vertical-align: middle;
-      min-height: 2rem;
-      line-height: 2rem;
-      display: inline-block;
-      margin-right: 8px;
-      transition: all 0.2s ease-in-out;
-      white-space: nowrap;
-      color: #1976d2;
-    ">${date}</span><span style="
-      font-weight: 600;
-      font-size: 1.5rem;
-      vertical-align: middle;
-      min-height: 2rem;
-      line-height: 2rem;
-      transition: all 0.2s ease-in-out;
-      white-space: nowrap;
-      color: #1976d2;
-    ">${suffix}</span>`;
-  };
+  const updatePieChartForDate = React.useCallback((dateIndex: number, activeBarSeriesName: string | null) => {
+    if (!pieChartRef.current || !monthlyBreakdown[dateIndex]) return;
+
+    const currentData = monthlyBreakdown[dateIndex];
+    const pieInstance = pieChartRef.current.getEchartsInstance();
+
+    const newPieData = [
+      { value: parseFloat(currentData.initialInvestmentAmount), name: 'Initial Investment Amount', itemStyle: { color: '#1976D2', borderRadius: 4 } },
+      { value: parseFloat(currentData.monthlyInvestmentAmount), name: 'Monthly Investment Amount', itemStyle: { color: '#388E3C', borderRadius: 4 } },
+      { value: parseFloat(currentData.dividendAmount), name: 'Dividend Amount', itemStyle: { color: '#F57C00', borderRadius: 4 } },
+      { value: parseFloat(currentData.initialInvestmentReturn), name: 'Initial Investment Return', itemStyle: { color: 'rgba(25, 118, 210, 0.6)', borderRadius: 4 } },
+      { value: parseFloat(currentData.monthlyInvestmentReturn), name: 'Monthly Investment Return', itemStyle: { color: 'rgba(56, 142, 60, 0.6)', borderRadius: 4 } },
+      { value: parseFloat(currentData.dividendReturn), name: 'Dividend Return', itemStyle: { color: 'rgba(245, 124, 0, 0.6)', borderRadius: 4 } }
+    ];
+    const newTotalPieData = [
+      {
+        value: parseFloat(currentData.initialInvestmentAmount) +
+               parseFloat(currentData.monthlyInvestmentAmount) +
+               parseFloat(currentData.dividendAmount),
+        name: 'Total Invested',
+        itemStyle: { color: '#4B0082', borderRadius: 4 }
+      },
+      {
+        value: parseFloat(currentData.initialInvestmentReturn) +
+               parseFloat(currentData.monthlyInvestmentReturn) +
+               parseFloat(currentData.dividendReturn),
+        name: 'Total Return',
+        itemStyle: { color: '#008B8B', borderRadius: 4 }
+      }
+    ];
+
+    pieInstance.setOption({
+      series: [
+        { id: PIE_SERIES_ID_DETAIL, data: newPieData },
+        { id: PIE_SERIES_ID_TOTAL, data: newTotalPieData }
+      ]
+    });
+
+    const titleElement = document.getElementById('pie-chart-title');
+    if (titleElement) {
+      titleElement.innerHTML = formatDateWithTag(currentData.date);
+    }
+
+    // Clear previous highlights first
+    pieInstance.dispatchAction({ type: 'downplay', seriesId: PIE_SERIES_ID_DETAIL });
+    pieInstance.dispatchAction({ type: 'downplay', seriesId: PIE_SERIES_ID_TOTAL });
+    pieInstance.dispatchAction({ type: 'hideTip' });
+
+    if (activeBarSeriesName) {
+      const seriesNamesForPieMap = Object.keys(pieDataIndexMap);
+
+      if (seriesNamesForPieMap.includes(activeBarSeriesName)) {
+        const pieSegmentDataIndex = pieDataIndexMap[activeBarSeriesName];
+        if (pieSegmentDataIndex !== undefined) {
+          pieInstance.dispatchAction({ type: 'highlight', seriesId: PIE_SERIES_ID_DETAIL, dataIndex: pieSegmentDataIndex });
+          pieInstance.dispatchAction({ type: 'showTip', seriesId: PIE_SERIES_ID_DETAIL, dataIndex: pieSegmentDataIndex, position: 'inside' });
+        }
+      } else if (totalPieSeriesNames.includes(activeBarSeriesName)) {
+        const totalSegmentDataIndex = totalPieSeriesNames.indexOf(activeBarSeriesName);
+        if (totalSegmentDataIndex !== -1) {
+          pieInstance.dispatchAction({ type: 'highlight', seriesId: PIE_SERIES_ID_TOTAL, dataIndex: totalSegmentDataIndex });
+          pieInstance.dispatchAction({ type: 'showTip', seriesId: PIE_SERIES_ID_TOTAL, dataIndex: totalSegmentDataIndex, position: 'inside' });
+        }
+      }
+    }
+  }, [monthlyBreakdown, formatDateWithTag]);
 
 
   const chartOption = {
@@ -388,330 +414,94 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
           className="mt-4"
           ref={barChartRef}
           onEvents={{
-            'mouseover': (params: { seriesName: string; dataIndex: number }) => {
-              if (pieChartRef.current) {
-                const seriesNames = [
-                  'Initial Investment Amount',
-                  'Initial Investment Return',
-                  'Monthly Investment Amount',
-                  'Monthly Investment Return',
-                  'Dividend Amount',
-                  'Dividend Return'
-                ];
-                const pieDataIndexMap = {
-                  'Initial Investment Amount': 0,
-                  'Initial Investment Return': 3,
-                  'Monthly Investment Amount': 1,
-                  'Monthly Investment Return': 4,
-                  'Dividend Amount': 2,
-                  'Dividend Return': 5
-                };
-                const totalSeries = ['Total Invested', 'Total Return'];
-                const dataIndex = seriesNames.indexOf(params.seriesName);
-                const totalIndex = totalSeries.indexOf(params.seriesName);
-                if (dataIndex !== -1) {
-                  const seriesName = params.seriesName as keyof typeof pieDataIndexMap;
-                  const pieDataIndex = pieDataIndexMap[seriesName];
-                  pieChartRef.current.getEchartsInstance().dispatchAction({
-                    type: 'highlight',
-                    seriesIndex: 0,
-                    dataIndex: pieDataIndex
-                  });
-                  // Show tooltip for the highlighted pie chart segment
-                  pieChartRef.current.getEchartsInstance().dispatchAction({
-                    type: 'showTip',
-                    seriesIndex: 0,
-                    dataIndex: pieDataIndex
-                  });
-                } else if (totalIndex !== -1) {
-                  pieChartRef.current.getEchartsInstance().dispatchAction({
-                    type: 'highlight',
-                    seriesIndex: 1,
-                    dataIndex: totalIndex
-                  });
-                  // Show tooltip for the highlighted pie chart segment
-                  pieChartRef.current.getEchartsInstance().dispatchAction({
-                    type: 'showTip',
-                    seriesIndex: 1,
-                    dataIndex: totalIndex
-                  });
-                }
-                // 更新饼状图数据以反映当前日期的投资分解
-                const dateIndex = params.dataIndex;
-                const currentData = monthlyBreakdown[dateIndex];
-                const pieData = [
-                  { value: parseFloat(currentData.initialInvestmentAmount), name: 'Initial Investment Amount', itemStyle: { color: '#1976D2', borderRadius: 4 } },
-                  { value: parseFloat(currentData.monthlyInvestmentAmount), name: 'Monthly Investment Amount', itemStyle: { color: '#388E3C', borderRadius: 4 } },
-                  { value: parseFloat(currentData.dividendAmount), name: 'Dividend Amount', itemStyle: { color: '#F57C00', borderRadius: 4 } },
-                  { value: parseFloat(currentData.initialInvestmentReturn), name: 'Initial Investment Return', itemStyle: { color: 'rgba(25, 118, 210, 0.6)', borderRadius: 4 } },
-                  { value: parseFloat(currentData.monthlyInvestmentReturn), name: 'Monthly Investment Return', itemStyle: { color: 'rgba(56, 142, 60, 0.6)', borderRadius: 4 } },
-                  { value: parseFloat(currentData.dividendReturn), name: 'Dividend Return', itemStyle: { color: 'rgba(245, 124, 0, 0.6)', borderRadius: 4 } }
-                ];
-                const totalPieData = [
-                  {
-                    value: parseFloat(currentData.initialInvestmentAmount) +
-                           parseFloat(currentData.monthlyInvestmentAmount) +
-                           parseFloat(currentData.dividendAmount),
-                    name: 'Total Invested',
-                    itemStyle: { color: '#4B0082', borderRadius: 4 }
-                  },
-                  {
-                    value: parseFloat(currentData.initialInvestmentReturn) +
-                           parseFloat(currentData.monthlyInvestmentReturn) +
-                           parseFloat(currentData.dividendReturn),
-                    name: 'Total Return',
-                    itemStyle: { color: '#008B8B', borderRadius: 4 }
-                  }
-                ];
-                pieChartRef.current.getEchartsInstance().setOption({
-                  series: [
-                    {
-                      type: 'pie',
-                      radius: ['0%', '60%'],
-                      center: ['50%', '50%'],
-                      itemStyle: {
-                        borderRadius: 4
-                      },
-                      data: pieData,
-                      emphasis: {
-                        itemStyle: {
-                          shadowBlur: 15,
-                          shadowOffsetX: 0,
-                          shadowColor: 'rgba(102, 126, 234, 0.4)',
-                          borderRadius: 4,
-                          borderWidth: 2,
-                          borderColor: 'rgba(255, 255, 255, 0.8)'
-                        },
-                        label: {
-                          show: true,
-                          fontSize: 14,
-                          fontWeight: '600',
-                          color: '#FFFFFF',
-                          backgroundColor: 'rgba(102, 126, 234, 0.95)',
-                          borderRadius: 8,
-                          padding: [8, 12],
-                          borderWidth: 1,
-                          borderColor: 'rgba(255, 255, 255, 0.3)',
-                          shadowBlur: 8,
-                          shadowColor: 'rgba(102, 126, 234, 0.3)'
-                        }
-                      }
-                    },
-                    {
-                      type: 'pie',
-                      radius: ['60%', '75%'],
-                      center: ['50%', '50%'],
-                      itemStyle: {
-                        borderRadius: 4
-                      },
-                      data: totalPieData,
-                      emphasis: {
-                        itemStyle: {
-                          shadowBlur: 15,
-                          shadowOffsetX: 0,
-                          shadowColor: 'rgba(102, 126, 234, 0.4)',
-                          borderRadius: 4,
-                          borderWidth: 2,
-                          borderColor: 'rgba(255, 255, 255, 0.8)'
-                        },
-                        label: {
-                          show: true,
-                          fontSize: 14,
-                          fontWeight: '600',
-                          color: '#FFFFFF',
-                          backgroundColor: 'rgba(102, 126, 234, 0.95)',
-                          borderRadius: 8,
-                          padding: [8, 12],
-                          borderWidth: 1,
-                          borderColor: 'rgba(255, 255, 255, 0.3)',
-                          shadowBlur: 8,
-                          shadowColor: 'rgba(102, 126, 234, 0.3)'
-                        }
-                      }
-                    }
-                  ]
-                });
-                // 更新饼状图标题以反映当前日期
-                updatePieChartTitle(formatDateWithTag(currentData.date));
+            'mouseover': (params: { seriesName: string; dataIndex: number; componentType: string }) => {
+              // Ensure the event is from a series hover (e.g., a bar)
+              if (params.componentType === 'series' && params.seriesName) {
+                interactionStateRef.current = 'bar_hover';
+                updatePieChartForDate(params.dataIndex, params.seriesName);
               }
             },
-            'mouseout': (params: { seriesName: string }) => {
-              if (pieChartRef.current) {
-                const seriesNames = [
-                  'Initial Investment Amount',
-                  'Initial Investment Return',
-                  'Monthly Investment Amount',
-                  'Monthly Investment Return',
-                  'Dividend Amount',
-                  'Dividend Return'
-                ];
-                const pieDataIndexMap = {
-                  'Initial Investment Amount': 0,
-                  'Initial Investment Return': 3,
-                  'Monthly Investment Amount': 1,
-                  'Monthly Investment Return': 4,
-                  'Dividend Amount': 2,
-                  'Dividend Return': 5
-                };
-                const totalSeries = ['Total Invested', 'Total Return'];
-                const dataIndex = seriesNames.indexOf(params.seriesName);
-                const totalIndex = totalSeries.indexOf(params.seriesName);
-                if (dataIndex !== -1) {
-                  const seriesName = params.seriesName as keyof typeof pieDataIndexMap;
-                  const pieDataIndex = pieDataIndexMap[seriesName];
-                  pieChartRef.current.getEchartsInstance().dispatchAction({
-                    type: 'downplay',
-                    seriesIndex: 0,
-                    dataIndex: pieDataIndex
-                  });
-                  // Hide tooltip for the pie chart segment
-                  pieChartRef.current.getEchartsInstance().dispatchAction({
-                    type: 'hideTip'
-                  });
-                } else if (totalIndex !== -1) {
-                  pieChartRef.current.getEchartsInstance().dispatchAction({
-                    type: 'downplay',
-                    seriesIndex: 1,
-                    dataIndex: totalIndex
-                  });
-                  // Hide tooltip for the pie chart segment
-                  pieChartRef.current.getEchartsInstance().dispatchAction({
-                    type: 'hideTip'
-                  });
+            'mouseout': (params: { seriesName: string; componentType: string }) => {
+              if (params.componentType === 'series') {
+                interactionStateRef.current = null;
+                // If an axis pointer is active, update pie to that date without specific bar highlight
+                if (latestAxisDataIndexRef.current !== null && monthlyBreakdown[latestAxisDataIndexRef.current]) {
+                  updatePieChartForDate(latestAxisDataIndexRef.current, null);
                 }
-                // 恢复饼状图数据为最后一天的数据
-                const lastData = monthlyBreakdown[monthlyBreakdown.length - 1];
-                const pieData = [
-                  { value: parseFloat(lastData.initialInvestmentAmount), name: 'Initial Investment Amount', itemStyle: { color: '#1976D2', borderRadius: 4 } },
-                  { value: parseFloat(lastData.monthlyInvestmentAmount), name: 'Monthly Investment Amount', itemStyle: { color: '#388E3C', borderRadius: 4 } },
-                  { value: parseFloat(lastData.dividendAmount), name: 'Dividend Amount', itemStyle: { color: '#F57C00', borderRadius: 4 } },
-                  { value: parseFloat(lastData.initialInvestmentReturn), name: 'Initial Investment Return', itemStyle: { color: 'rgba(25, 118, 210, 0.6)', borderRadius: 4 } },
-                  { value: parseFloat(lastData.monthlyInvestmentReturn), name: 'Monthly Investment Return', itemStyle: { color: 'rgba(56, 142, 60, 0.6)', borderRadius: 4 } },
-                  { value: parseFloat(lastData.dividendReturn), name: 'Dividend Return', itemStyle: { color: 'rgba(245, 124, 0, 0.6)', borderRadius: 4 } }
-                ];
-                const totalPieData = [
-                  {
-                    value: parseFloat(lastData.initialInvestmentAmount) +
-                           parseFloat(lastData.monthlyInvestmentAmount) +
-                           parseFloat(lastData.dividendAmount),
-                    name: 'Total Invested',
-                    itemStyle: { color: '#4B0082', borderRadius: 4 }
-                  },
-                  {
-                    value: parseFloat(lastData.initialInvestmentReturn) +
-                           parseFloat(lastData.monthlyInvestmentReturn) +
-                           parseFloat(lastData.dividendReturn),
-                    name: 'Total Return',
-                    itemStyle: { color: '#008B8B', borderRadius: 4 }
-                  }
-                ];
-                pieChartRef.current.getEchartsInstance().setOption({
-                  series: [
-                    {
-                      type: 'pie',
-                      radius: ['0%', '60%'],
-                      center: ['50%', '50%'],
-                      itemStyle: {
-                        borderRadius: 4
-                      },
-                      data: pieData,
-                      emphasis: {
-                        itemStyle: {
-                          shadowBlur: 15,
-                          shadowOffsetX: 0,
-                          shadowColor: 'rgba(102, 126, 234, 0.4)',
-                          borderRadius: 4,
-                          borderWidth: 2,
-                          borderColor: 'rgba(255, 255, 255, 0.8)'
-                        },
-                        label: {
-                          show: true,
-                          fontSize: 14,
-                          fontWeight: '600',
-                          color: '#FFFFFF',
-                          backgroundColor: 'rgba(102, 126, 234, 0.95)',
-                          borderRadius: 8,
-                          padding: [8, 12],
-                          borderWidth: 1,
-                          borderColor: 'rgba(255, 255, 255, 0.3)',
-                          shadowBlur: 8,
-                          shadowColor: 'rgba(102, 126, 234, 0.3)'
-                        }
-                      }
-                    },
-                    {
-                      type: 'pie',
-                      radius: ['60%', '75%'],
-                      center: ['50%', '50%'],
-                      itemStyle: {
-                        borderRadius: 4
-                      },
-                      data: totalPieData,
-                      emphasis: {
-                        itemStyle: {
-                          shadowBlur: 15,
-                          shadowOffsetX: 0,
-                          shadowColor: 'rgba(102, 126, 234, 0.4)',
-                          borderRadius: 4,
-                          borderWidth: 2,
-                          borderColor: 'rgba(255, 255, 255, 0.8)'
-                        },
-                        label: {
-                          show: true,
-                          fontSize: 14,
-                          fontWeight: '600',
-                          color: '#FFFFFF',
-                          backgroundColor: 'rgba(102, 126, 234, 0.95)',
-                          borderRadius: 8,
-                          padding: [8, 12],
-                          borderWidth: 1,
-                          borderColor: 'rgba(255, 255, 255, 0.3)',
-                          shadowBlur: 8,
-                          shadowColor: 'rgba(102, 126, 234, 0.3)'
-                        }
-                      }
-                    }
-                  ]
-                });
-                // 恢复饼状图标题为默认值（最后一天的日期）
-                updatePieChartTitle(formatDateWithTag(lastData.date));
+                // If no axis pointer active (e.g., mouse moved completely out),
+                // 'globalout' will eventually reset to the last day.
               }
             },
+            'updateAxisPointer': (params: { type: string; currTrigger?: string; dataIndex?: number; axesInfo?: Array<{axisDim: string, axisIndex: number, value: number}> }) => {
+              let currentXAxisIndex: number | undefined;
+               // For category axis with tooltip trigger 'axis', params.dataIndex is often the direct index.
+              if (params.currTrigger === 'axis' && typeof params.dataIndex === 'number') {
+                currentXAxisIndex = params.dataIndex;
+              } else if (params.axesInfo && params.axesInfo[0] && params.axesInfo[0].axisDim === 'x') {
+                 // Fallback or primary way for some ECharts versions/configurations
+                currentXAxisIndex = params.axesInfo[0].value;
+              }
+
+              if (typeof currentXAxisIndex === 'number' && monthlyBreakdown[currentXAxisIndex]) {
+                latestAxisDataIndexRef.current = currentXAxisIndex;
+                if (interactionStateRef.current !== 'bar_hover') {
+                  updatePieChartForDate(currentXAxisIndex, null);
+                }
+              }
+            },
+            'globalout': () => {
+              interactionStateRef.current = null;
+              latestAxisDataIndexRef.current = null;
+              if (monthlyBreakdown.length > 0) {
+                updatePieChartForDate(monthlyBreakdown.length - 1, null); // Revert to last day
+              }
+            },
+            // Keep existing legendselectchanged if needed, or remove if it conflicts or is not desired with new logic
             'legendselectchanged': (params: { name: string; selected: { [key: string]: boolean } }) => {
               if (pieChartRef.current) {
+                const lastDataIndex = monthlyBreakdown.length - 1;
+                if(lastDataIndex < 0) return;
+
+                const baseData = monthlyBreakdown[lastDataIndex];
                 const pieData = [
-                  { value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].initialInvestmentAmount), name: 'Initial Investment Amount', itemStyle: { color: '#1976D2', borderRadius: 4 } },
-                  { value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].initialInvestmentReturn), name: 'Initial Investment Return', itemStyle: { color: 'rgba(25, 118, 210, 0.6)', borderRadius: 4 } },
-                  { value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].monthlyInvestmentAmount), name: 'Monthly Investment Amount', itemStyle: { color: '#388E3C', borderRadius: 4 } },
-                  { value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].monthlyInvestmentReturn), name: 'Monthly Investment Return', itemStyle: { color: 'rgba(56, 142, 60, 0.6)', borderRadius: 4 } },
-                  { value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].dividendAmount), name: 'Dividend Amount', itemStyle: { color: '#F57C00', borderRadius: 4 } },
-                  { value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].dividendReturn), name: 'Dividend Return', itemStyle: { color: 'rgba(245, 124, 0, 0.6)', borderRadius: 4 } }
+                  { value: parseFloat(baseData.initialInvestmentAmount), name: 'Initial Investment Amount', itemStyle: { color: '#1976D2', borderRadius: 4 } },
+                  { value: parseFloat(baseData.monthlyInvestmentAmount), name: 'Monthly Investment Amount', itemStyle: { color: '#388E3C', borderRadius: 4 } },
+                  { value: parseFloat(baseData.dividendAmount), name: 'Dividend Amount', itemStyle: { color: '#F57C00', borderRadius: 4 } },
+                  { value: parseFloat(baseData.initialInvestmentReturn), name: 'Initial Investment Return', itemStyle: { color: 'rgba(25, 118, 210, 0.6)', borderRadius: 4 } },
+                  { value: parseFloat(baseData.monthlyInvestmentReturn), name: 'Monthly Investment Return', itemStyle: { color: 'rgba(56, 142, 60, 0.6)', borderRadius: 4 } },
+                  { value: parseFloat(baseData.dividendReturn), name: 'Dividend Return', itemStyle: { color: 'rgba(245, 124, 0, 0.6)', borderRadius: 4 } }
                 ];
                 const updatedPieData = pieData.map(item => {
                   const isSelected = params.selected[item.name];
                   return {
                     ...item,
-                    value: isSelected ? item.value : 0
+                    value: isSelected ? item.value : 0 // Keep value or set to 0 if unselected
                   };
                 });
+
+                // Similar calculation for totalPieData based on selected series
+                let totalInvestedValue = 0;
+                let totalReturnValue = 0;
+
+                if (params.selected['Initial Investment Amount']) totalInvestedValue += parseFloat(baseData.initialInvestmentAmount);
+                if (params.selected['Monthly Investment Amount']) totalInvestedValue += parseFloat(baseData.monthlyInvestmentAmount);
+                if (params.selected['Dividend Amount']) totalInvestedValue += parseFloat(baseData.dividendAmount);
+
+                if (params.selected['Initial Investment Return']) totalReturnValue += parseFloat(baseData.initialInvestmentReturn);
+                if (params.selected['Monthly Investment Return']) totalReturnValue += parseFloat(baseData.monthlyInvestmentReturn);
+                if (params.selected['Dividend Return']) totalReturnValue += parseFloat(baseData.dividendReturn);
+
+                const updatedTotalPieData = [
+                    { value: totalInvestedValue, name: 'Total Invested', itemStyle: { color: '#4B0082', borderRadius: 4 } },
+                    { value: totalReturnValue, name: 'Total Return', itemStyle: { color: '#008B8B', borderRadius: 4 } }
+                ];
+
                 const pieInstance = pieChartRef.current.getEchartsInstance();
                 pieInstance.setOption({
-                  series: [{
-                    type: 'pie',
-                    radius: '50%',
-                    itemStyle: {
-                      borderRadius: 4
-                    },
-                    data: updatedPieData,
-                    emphasis: {
-                      itemStyle: {
-                        shadowBlur: 10,
-                        shadowOffsetX: 0,
-                        shadowColor: 'rgba(0, 0, 0, 0.5)',
-                        borderRadius: 4
-                      }
-                    }
-                  }]
+                  series: [
+                    { id: PIE_SERIES_ID_DETAIL, data: updatedPieData },
+                    { id: PIE_SERIES_ID_TOTAL, data: updatedTotalPieData }
+                  ]
                 });
               }
             }
@@ -726,19 +516,10 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
             textAlign: 'center',
             fontWeight: 600,
             my: 2,
-            color: 'primary.main',
-            minHeight: '3rem', // Ensure consistent height
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.2s ease-in-out',
-            overflow: 'hidden', // Prevent layout shifts
-            '& span': {
-              transition: 'all 0.2s ease-in-out'
-            }
+            color: 'primary.main'
           }}
           dangerouslySetInnerHTML={{
-            __html: pieChartTitle || formatDateWithTag(monthlyBreakdown[monthlyBreakdown.length - 1].date)
+            __html: formatDateWithTag(monthlyBreakdown[monthlyBreakdown.length - 1].date)
           }}
         />
         <ReactECharts
@@ -809,6 +590,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
             },
             series: [
               {
+                id: PIE_SERIES_ID_DETAIL, // Added ID
                 type: 'pie',
                 radius: ['0%', '60%'],
                 center: ['50%', '50%'],
@@ -848,6 +630,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                 }
               },
               {
+                id: PIE_SERIES_ID_TOTAL, // Added ID
                 type: 'pie',
                 radius: ['60%', '75%'],
                 center: ['50%', '50%'],
@@ -925,7 +708,10 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                   });
                 }
                 // 更新饼状图标题以反映当前高亮的系列
-                updatePieChartTitle(formatDatePlain(params.name, ''));
+                const titleElement = document.getElementById('pie-chart-title');
+                if (titleElement) {
+                  titleElement.innerHTML = formatDateWithTag(params.name, '');
+                }
               }
             },
             'mouseout': (params: { dataIndex: number; name: string; seriesIndex: number }) => {
@@ -953,7 +739,10 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                   });
                 }
                 // 恢复饼状图标题为默认值（最后一天的日期）
-                updatePieChartTitle(formatDateWithTag(monthlyBreakdown[monthlyBreakdown.length - 1].date));
+                const titleElement = document.getElementById('pie-chart-title');
+                if (titleElement) {
+                  titleElement.innerHTML = formatDateWithTag(monthlyBreakdown[monthlyBreakdown.length - 1].date);
+                }
               }
             },
             'legendselectchanged': (params: { name: string; selected: { [key: string]: boolean } }) => {
