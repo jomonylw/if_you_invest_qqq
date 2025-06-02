@@ -41,7 +41,9 @@ const PriceChartComponent = ({ calFormStartDate, calFormEndDate, onDatesChange }
           const pcts = data.map(item => ({
             value: item.pct,
             itemStyle: {
-              color: item.pct >= 0 ? '#00ff00' : '#ff0000'
+              color: item.pct >= 0 ? '#00ff00' : '#ff0000',
+              // 正值在上方圆角，负值在下方圆角
+              borderRadius: item.pct >= 0 ? [2, 2, 0, 0] : [0, 0, 2, 2]
             }
           }));
 
@@ -97,11 +99,72 @@ const PriceChartComponent = ({ calFormStartDate, calFormEndDate, onDatesChange }
               axisPointer: {
                 type: 'cross',
                 crossStyle: {
-                  color: '#333'
+                  color: 'rgba(102, 126, 234, 0.6)',
+                  width: 1
                 }
               },
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              borderColor: 'rgba(255, 255, 255, 0.3)',
+              borderWidth: 1,
+              borderRadius: 12,
+              padding: [12, 16],
               textStyle: {
-                color: '#333'
+                color: '#333',
+                fontSize: 14,
+                fontWeight: 'normal'
+              },
+              extraCssText: `
+                backdrop-filter: blur(12px);
+                box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+              `,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              formatter: function (params: any) {
+                if (!params) return '';
+
+                // Handle both single param and array of params
+                const paramArray = Array.isArray(params) ? params : [params];
+                if (paramArray.length === 0) return '';
+
+                const date = paramArray[0].name;
+                let tooltipContent = `<div style="margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid rgba(102, 126, 234, 0.2);">
+                  <span style="font-weight: 600; font-size: 14px; color: #667eea;">${date}</span>
+                </div>`;
+
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                paramArray.forEach((param: any) => {
+                  const { seriesName, value } = param;
+
+                  if (seriesName === 'Close Price') {
+                    const formattedValue = `$${formatCurrency(value)}`;
+                    tooltipContent += `
+                      <div style="display: flex; align-items: center; margin: 4px 0; padding: 3px 0;">
+                        <span style="margin-right: 6px; width: 10px; height: 10px; background: #667eea; border-radius: 50%; display: inline-block;"></span>
+                        <span style="flex: 1; font-size: 12px; color: #666; margin-right: 8px;">${seriesName}:</span>
+                        <span style="font-weight: 600; font-size: 13px; color: #667eea;">${formattedValue}</span>
+                      </div>
+                    `;
+                  } else if (seriesName === 'Change Percent') {
+                    const percentValue = (value * 100).toFixed(2);
+                    const isPositive = value >= 0;
+                    // 使用与柱状图一致的颜色：绿色表示正值，红色表示负值
+                    const changeColor = isPositive ? '#00ff00' : '#ff0000';
+                    const changeIcon = isPositive ? '⭡' : '⭣';
+
+                    tooltipContent += `
+                      <div style="display: flex; align-items: center; margin: 4px 0; padding: 3px 0;">
+                        <span style="margin-right: 6px; width: 10px; height: 10px; background: ${changeColor}; border-radius: 50%; display: inline-block;"></span>
+                        <span style="flex: 1; font-size: 12px; color: #666; margin-right: 8px;">${seriesName}:</span>
+                        <span style="font-weight: 600; font-size: 13px; color: ${changeColor};">
+                          ${changeIcon} ${percentValue}%
+                        </span>
+                      </div>
+                    `;
+                  }
+                });
+
+                return tooltipContent;
               }
             },
             toolbox: {
@@ -222,27 +285,27 @@ const PriceChartComponent = ({ calFormStartDate, calFormEndDate, onDatesChange }
                 type: 'line',
                 smooth: true,
                 yAxisIndex: 0,
-                tooltip: {
-                  valueFormatter: function (value: (string | number | Date | null | undefined) | (string | number | Date | null | undefined)[]) {
-                    if (value === undefined || value === null) return '';
-                    if (Array.isArray(value)) {
-                        // Assuming the price is the second element for 'line' series in a grouped tooltip, or the first if not grouped.
-                        // For simplicity, let's assume the relevant number is directly passed or is the primary numeric value.
-                        // This part might need adjustment based on how ECharts passes array values for your specific chart type.
-                        // If 'value' is an array like [seriesName, dataValue, ...], then value[1] might be correct.
-                        const numericEntry = value.find(v => typeof v === 'number') as number | undefined;
-                        if (numericEntry !== undefined) {
-                          return '$ ' + formatCurrency(numericEntry);
-                        }
-                        return value.map(v => String(v)).join(', ');
-                    }
-                    if (value instanceof Date) {
-                        return value.toLocaleString();
-                    }
-                    if (typeof value === 'number') {
-                      return '$ ' + formatCurrency(value);
-                    }
-                    return String(value);
+                lineStyle: {
+                  width: 3,
+                  color: '#667eea'
+                },
+                itemStyle: {
+                  color: '#667eea',
+                  borderColor: '#fff',
+                  borderWidth: 2
+                },
+                areaStyle: {
+                  opacity: 0
+                },
+                emphasis: {
+                  itemStyle: {
+                    color: '#667eea',
+                    borderColor: '#fff',
+                    borderWidth: 3
+                  },
+                  lineStyle: {
+                    color: '#667eea',
+                    width: 4
                   }
                 },
                 data: closes
@@ -252,24 +315,11 @@ const PriceChartComponent = ({ calFormStartDate, calFormEndDate, onDatesChange }
                 type: 'bar',
                 yAxisIndex: 1,
                 itemStyle: {
-                  opacity: 0.5
+                  opacity: 0.7
                 },
-                tooltip: {
-                  valueFormatter: function (value: (string | number | Date | null | undefined) | (string | number | Date | null | undefined)[]) {
-                    if (value === undefined || value === null) return '';
-                    if (Array.isArray(value)) {
-                        if (value.length > 0 && typeof value[0] === 'number') {
-                            return (value[0] * 100).toFixed(2) + ' %';
-                        }
-                        return value.map(v => String(v)).join(', ');
-                    }
-                     if (value instanceof Date) {
-                        return value.toLocaleString();
-                    }
-                    if (typeof value === 'number') {
-                      return (value * 100).toFixed(2) + ' %';
-                    }
-                    return String(value);
+                emphasis: {
+                  itemStyle: {
+                    opacity: 0.9
                   }
                 },
                 data: pcts
@@ -293,7 +343,7 @@ const PriceChartComponent = ({ calFormStartDate, calFormEndDate, onDatesChange }
 
     fetchData();
     setDataLoaded(true);
-  }, []); // 仅在组件首次挂载时加载数据
+  }, [dataLoaded, calFormStartDate, calFormEndDate]); // 仅在组件首次挂载时加载数据
 
   const handleDataZoom = useCallback((params: DataZoomEventParams) => {
     if (allDates.length > 0 && params) {

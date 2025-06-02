@@ -112,9 +112,16 @@ export default function Home() {
         onDateChangeInForm={handleDateChangeInPage}
       />
       {/* {calApiLoading && <LoadingSpinner />} */}
-      <div className="py-1 md:py-2 text-center text-gray-600 text-xs md:text-sm border-gray-200">
+
+      {/* Simple Footer */}
+      <footer className="py-2 text-center text-white/70 text-xs md:text-sm mt-2 space-y-2">
+        {/* Disclaimer */}
+        <p className="text-xs md:text-sm text-white/60 max-w-3xl mx-auto leading-relaxed">
+          <span className="inline-block mr-2">⚠️</span>
+          <strong>Disclaimer:</strong> This calculator is for educational purposes only. Past performance does not guarantee future results and does not constitute investment advice.</p>
+        {/* Copyright */}
         <p>© {new Date().getFullYear()} If You Invest QQQ</p>
-      </div>
+      </footer>
     </div>
     </LocalizationProvider>
   );
