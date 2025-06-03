@@ -129,7 +129,7 @@ export default function InvestmentForm({
             gap: 2
           }}
         >
-          <span style={{ fontSize: 'inherit' }}>🎯</span>
+          {/* <span style={{ fontSize: 'inherit' }}>🎯</span> */}
           <span
             style={{
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -214,11 +214,11 @@ export default function InvestmentForm({
               gap: 1,
               fontSize: { xs: '1rem', md: '1.25rem' }
             }}>
-              💰 Investment Amounts
+              💵 Investment Amounts
             </Typography>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
               <TextField
-                label="💵 Initial Investment"
+                label="Initial Investment"
                 name="initial_investment"
                 type="number"
                 value={formParams.initial_investment}
@@ -243,7 +243,7 @@ export default function InvestmentForm({
                 }}
               />
               <TextField
-                label="📈 Monthly Investment"
+                label="Monthly Investment"
                 name="monthly_investment_amount"
                 type="number"
                 value={formParams.monthly_investment_amount}
@@ -415,9 +415,9 @@ export default function InvestmentForm({
               </Box>
             ) : (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <span>🚀</span>
+                {/* <span>🧮</span> */}
                 <span>Calculate Returns</span>
-                <span>📊</span>
+                {/* <span>📊</span> */}
               </Box>
             )}
           </Button>
@@ -478,7 +478,7 @@ export default function InvestmentForm({
                 gap: 2
               }}
             >
-              <span style={{ fontSize: 'inherit' }}>📊</span>
+              {/* <span style={{ fontSize: 'inherit' }}>📊</span> */}
               <span
                 style={{
                   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -489,7 +489,7 @@ export default function InvestmentForm({
               >
                 Investment Results
               </span>
-              <span style={{ fontSize: 'inherit' }}>🎉</span>
+              {/* <span style={{ fontSize: 'inherit' }}>🎉</span> */}
             </Typography>
             <Box sx={{
               background: 'rgba(255, 255, 255, 0.1)',

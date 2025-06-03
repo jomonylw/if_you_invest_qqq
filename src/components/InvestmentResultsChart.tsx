@@ -96,8 +96,8 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
     }
 
     // Clear previous highlights first
-    pieInstance.dispatchAction({ type: 'downplay', seriesId: PIE_SERIES_ID_DETAIL });
-    pieInstance.dispatchAction({ type: 'downplay', seriesId: PIE_SERIES_ID_TOTAL });
+    pieInstance.dispatchAction({ type: 'downplay', seriesIndex: 0 });
+    pieInstance.dispatchAction({ type: 'downplay', seriesIndex: 1 });
     pieInstance.dispatchAction({ type: 'hideTip' });
 
     if (activeBarSeriesName) {
@@ -106,14 +106,38 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
       if (seriesNamesForPieMap.includes(activeBarSeriesName)) {
         const pieSegmentDataIndex = pieDataIndexMap[activeBarSeriesName];
         if (pieSegmentDataIndex !== undefined) {
-          pieInstance.dispatchAction({ type: 'highlight', seriesId: PIE_SERIES_ID_DETAIL, dataIndex: pieSegmentDataIndex });
-          pieInstance.dispatchAction({ type: 'showTip', seriesId: PIE_SERIES_ID_DETAIL, dataIndex: pieSegmentDataIndex, position: 'inside' });
+          // Highlight the segment in the detail pie chart (seriesIndex: 0)
+          pieInstance.dispatchAction({
+            type: 'highlight',
+            seriesIndex: 0,
+            dataIndex: pieSegmentDataIndex
+          });
+          // Show tooltip for the highlighted segment
+          setTimeout(() => {
+            pieInstance.dispatchAction({
+              type: 'showTip',
+              seriesIndex: 0,
+              dataIndex: pieSegmentDataIndex
+            });
+          }, 100);
         }
       } else if (totalPieSeriesNames.includes(activeBarSeriesName)) {
         const totalSegmentDataIndex = totalPieSeriesNames.indexOf(activeBarSeriesName);
         if (totalSegmentDataIndex !== -1) {
-          pieInstance.dispatchAction({ type: 'highlight', seriesId: PIE_SERIES_ID_TOTAL, dataIndex: totalSegmentDataIndex });
-          pieInstance.dispatchAction({ type: 'showTip', seriesId: PIE_SERIES_ID_TOTAL, dataIndex: totalSegmentDataIndex, position: 'inside' });
+          // Highlight the segment in the total pie chart (seriesIndex: 1)
+          pieInstance.dispatchAction({
+            type: 'highlight',
+            seriesIndex: 1,
+            dataIndex: totalSegmentDataIndex
+          });
+          // Show tooltip for the highlighted segment
+          setTimeout(() => {
+            pieInstance.dispatchAction({
+              type: 'showTip',
+              seriesIndex: 1,
+              dataIndex: totalSegmentDataIndex
+            });
+          }, 100);
         }
       }
     }
@@ -779,7 +803,7 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
           className="block"
         >
           <div className="flex items-center">
-            <div className="mr-4 text-2xl">📈</div>
+            <div className="mr-4 text-4xl">👉</div>
             <div className="flex-1">
               <Typography variant="h6" component="h3" sx={{ color: 'primary.main', fontWeight: 'bold', mb: 1 }}>
                 How to Invest in QQQ ETF

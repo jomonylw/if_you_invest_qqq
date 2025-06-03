@@ -61,7 +61,7 @@ export default function WealthGrowthComparison({ results }: InvestmentResultsCha
               gap: 2
             }}
           >
-            <span style={{ fontSize: 'inherit' }}>💎</span>
+            {/* <span style={{ fontSize: 'inherit' }}>💎</span> */}
             <span
               style={{
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -72,7 +72,7 @@ export default function WealthGrowthComparison({ results }: InvestmentResultsCha
             >
               Wealth Growth Comparison
             </span>
-            <span style={{ fontSize: 'inherit' }}>📈</span>
+            {/* <span style={{ fontSize: 'inherit' }}>📈</span> */}
           </Typography>
 
           <Box sx={{
@@ -104,10 +104,10 @@ export default function WealthGrowthComparison({ results }: InvestmentResultsCha
                   display: 'block'
                 }}
               >
-                📅 Start: {input.startDate}
+                Start: {input.startDate}
               </Typography>
               <Typography variant="body1" sx={{ color: 'text.secondary', mb: 1, fontWeight: 'medium' }}>
-                💰 Investment Amount
+                Investment Amount
               </Typography>
               <Typography
                 variant="h4"
@@ -258,10 +258,10 @@ export default function WealthGrowthComparison({ results }: InvestmentResultsCha
                   display: 'block'
                 }}
               >
-                🏁 End: {input.endDate}
+                End: {input.endDate}
               </Typography>
               <Typography variant="body1" sx={{ color: 'text.secondary', mb: 1, fontWeight: 'medium' }}>
-                💎 Final Wealth (With Dividends)
+                Final Wealth (With Dividends)
               </Typography>
               <Typography
                 variant="h3"

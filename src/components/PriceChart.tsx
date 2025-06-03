@@ -545,7 +545,7 @@ const PriceChartComponent = ({ calFormStartDate, calFormEndDate, onDatesChange }
           gap: 2
         }}
       >
-        <span style={{ fontSize: 'inherit' }}>📈</span>
+        {/* <span style={{ fontSize: 'inherit' }}>📈</span> */}
         <span
           style={{
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
