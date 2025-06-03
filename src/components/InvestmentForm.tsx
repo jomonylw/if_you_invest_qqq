@@ -351,7 +351,7 @@ export default function InvestmentForm({
                   Custom Annualized Return
                 </Typography> */}
                 <TextField
-                  label="🔧 Custom Annualized Return"
+                  label="Custom Annualized Return"
                   name="predicted_annualized_return"
                   type="number"
                   value={formParams.predicted_annualized_return || ''}
