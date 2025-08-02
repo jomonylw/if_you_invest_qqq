@@ -59,9 +59,29 @@ export default function InvestmentForm({
     onDateChangeInForm('end_date', newEndDate);
   }, [onDateChangeInForm, setFormParams]);
 
+  const formatNumber = (value: string | number): string => {
+    if (value === null || value === undefined || value === '') {
+      return '';
+    }
+    const stringValue = String(value).replace(/,/g, '');
+    if (stringValue === '') {
+      return '';
+    }
+    const number = parseInt(stringValue, 10);
+    if (isNaN(number)) {
+      return '';
+    }
+    return number.toLocaleString('en-US');
+  };
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setFormParams(prev => ({ ...prev, [name]: value }));
+    if (name === 'initial_investment' || name === 'monthly_investment_amount') {
+      const numericValue = value.replace(/[^0-9]/g, '');
+      setFormParams(prev => ({ ...prev, [name]: numericValue }));
+    } else {
+      setFormParams(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleDateChange = (name: 'start_date' | 'end_date', newValue: Date | null) => {
@@ -81,6 +101,7 @@ export default function InvestmentForm({
     event.preventDefault();
     const updatedParams = {
       ...formParams,
+      initial_investment: formParams.initial_investment || '0',
       predicted_annualized_return: formParams.predicted_annualized_return || '0',
       monthly_investment_amount: formParams.monthly_investment_amount || '0'
     };
@@ -220,8 +241,9 @@ export default function InvestmentForm({
               <TextField
                 label="Initial Investment"
                 name="initial_investment"
-                type="number"
-                value={formParams.initial_investment}
+                type="text"
+                inputMode="decimal"
+                value={formatNumber(formParams.initial_investment)}
                 onChange={handleChange}
                 fullWidth
                 required
@@ -245,8 +267,9 @@ export default function InvestmentForm({
               <TextField
                 label="Monthly Investment"
                 name="monthly_investment_amount"
-                type="number"
-                value={formParams.monthly_investment_amount}
+                type="text"
+                inputMode="decimal"
+                value={formatNumber(formParams.monthly_investment_amount)}
                 onChange={handleChange}
                 fullWidth
                 required

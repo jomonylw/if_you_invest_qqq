@@ -193,14 +193,17 @@ export class CacheMonitor {
  * 缓存装饰器 - 自动监控缓存操作
  */
 export function withCacheMonitoring(cacheKey: string) {
-  return function <T extends (...args: any[]) => Promise<any>>(
-    target: any,
+  return function <T extends (...args: unknown[]) => Promise<unknown>>(
+    target: object,
     propertyName: string,
     descriptor: TypedPropertyDescriptor<T>
   ) {
-    const method = descriptor.value!;
-    
-    descriptor.value = async function (...args: any[]) {
+    const method = descriptor.value;
+    if (!method) {
+      return descriptor;
+    }
+
+    descriptor.value = async function (this: unknown, ...args: unknown[]) {
       const startTime = Date.now();
       
       try {
@@ -221,5 +224,6 @@ export function withCacheMonitoring(cacheKey: string) {
         throw error;
       }
     } as T;
+    return descriptor;
   };
 }

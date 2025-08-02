@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import * as cheerio from 'cheerio'
+import { CacheManager } from '@/lib/cache'
 
 const prisma = new PrismaClient()
 

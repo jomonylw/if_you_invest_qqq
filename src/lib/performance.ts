@@ -59,7 +59,7 @@ export class PerformanceMonitor {
   /**
    * 记录缓存操作详情
    */
-  static logCacheOperation(operation: 'GET' | 'SET' | 'INVALIDATE', key: string, details?: any): void {
+  static logCacheOperation(operation: 'GET' | 'SET' | 'INVALIDATE', key: string, details?: Record<string, unknown>): void {
     const timestamp = new Date().toISOString().split('T')[1].split('.')[0];
     const emoji = operation === 'GET' ? '📖' : operation === 'SET' ? '💾' : '🗑️';
     const detailsStr = details ? ` | ${JSON.stringify(details)}` : '';
@@ -87,19 +87,23 @@ export class PerformanceMonitor {
  * 性能装饰器
  */
 export function withPerformanceMonitoring(label: string) {
-  return function <T extends (...args: any[]) => Promise<any>>(
-    target: any,
+  return function <T extends (...args: unknown[]) => Promise<unknown>>(
+    target: object,
     propertyName: string,
     descriptor: TypedPropertyDescriptor<T>
   ) {
-    const method = descriptor.value!;
-    
-    descriptor.value = async function (...args: any[]) {
+    const method = descriptor.value;
+    if (!method) {
+      return descriptor;
+    }
+
+    descriptor.value = async function (this: unknown, ...args: unknown[]) {
       return PerformanceMonitor.measure(
         `${label}.${propertyName}`,
         () => method.apply(this, args)
       );
     } as T;
+    return descriptor;
   };
 }
 
