@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getPriceData } from '@/lib/price';
 import type { Price } from '@prisma/client';
+import { unstable_cache } from 'next/cache';
+import { CacheMonitor } from '@/lib/cache-monitor';
 
 interface MonthlyData {
   date: string; // 月底日期 yyyy-MM-dd
@@ -8,12 +10,16 @@ interface MonthlyData {
   pct: number; // 当月价格变动百分比
 }
 
-export async function GET() {
-  try {
+// 缓存月度历史数据处理
+const getCachedMonthlyData = unstable_cache(
+  async () => {
+    const startTime = Date.now();
+    console.log('Cache miss - Processing monthly historical data...');
+
     const allPriceData = await getPriceData(); // 获取所有历史数据
 
     if (!allPriceData || allPriceData.length === 0) {
-      return NextResponse.json({ success: false, err: 'No price data available' }, { status: 404 });
+      throw new Error('No price data available');
     }
 
     const monthlyResults: MonthlyData[] = [];
@@ -51,7 +57,6 @@ export async function GET() {
         }
       }
 
-
       monthlyResults.push({
         date: `${endOfMonthDate.getFullYear()}-${(endOfMonthDate.getMonth() + 1).toString().padStart(2, '0')}-${endOfMonthDate.getDate().toString().padStart(2, '0')}`,
         close: endOfMonthClose,
@@ -61,7 +66,41 @@ export async function GET() {
       lastMonthClose = endOfMonthClose;
     }
 
-    return NextResponse.json({ success: true, data: monthlyResults });
+    const duration = Date.now() - startTime;
+    CacheMonitor.recordMiss('monthly-historical-data', duration);
+    const dataSize = JSON.stringify(monthlyResults).length;
+    CacheMonitor.recordSet('monthly-historical-data', dataSize);
+
+    return monthlyResults;
+  },
+  ['monthly-historical-data'], // 缓存键
+  {
+    revalidate: 86400, // 24小时缓存
+    tags: ['monthly-data', 'price-data'], // 缓存标签
+  }
+);
+
+export async function GET() {
+  try {
+    const startTime = Date.now();
+
+    // 从缓存获取月度数据
+    const monthlyResults = await getCachedMonthlyData();
+
+    const duration = Date.now() - startTime;
+    // 如果很快返回，说明是缓存命中
+    if (duration < 50) {
+      CacheMonitor.recordHit('monthly-historical-data', duration);
+    }
+
+    const response = NextResponse.json({ success: true, data: monthlyResults });
+
+    // 添加HTTP缓存头 - 24小时缓存
+    response.headers.set('Cache-Control', 'public, max-age=86400, s-maxage=86400');
+    response.headers.set('CDN-Cache-Control', 'public, max-age=86400');
+    response.headers.set('Vercel-CDN-Cache-Control', 'public, max-age=86400');
+
+    return response;
   } catch (error) {
     console.error('Error fetching or processing historical data:', error);
     return NextResponse.json({ success: false, err: 'Internal server error' }, { status: 500 });

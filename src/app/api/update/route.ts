@@ -139,6 +139,11 @@ export async function GET() {
     }
     
     console.log('Database update completed.');
+
+    // 清理相关缓存
+    await CacheManager.invalidatePriceData();
+    console.log('Cache invalidation completed.');
+
     return NextResponse.json({
       message: 'Price database updated successfully',
       length: dataToUpdate.length,

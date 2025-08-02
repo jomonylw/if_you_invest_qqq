@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getPriceData } from '../../../lib/price';
 import { calculateInvestmentGrowth } from '../../../utils/investment';
-import { Decimal } from '@prisma/client/runtime/library';
+import { createCompatiblePrice } from '@/lib/decimal-utils';
+import { PerformanceMonitor } from '@/lib/performance';
 
 
 // 新增辅助函数：解析和验证参数
@@ -59,9 +60,11 @@ function parseAndValidateParams(searchParams: URLSearchParams): { success: boole
 }
 
 export async function GET(request: Request) {
+  const overallStartTime = Date.now();
+
   const { searchParams } = new URL(request.url);
   const validationResult = parseAndValidateParams(searchParams);
-  
+
   if (!validationResult.success) {
     return NextResponse.json({ success: false, err: validationResult.err || 'Parameter validation failed' }, { status: 400 });
   }
@@ -109,11 +112,11 @@ export async function GET(request: Request) {
         const predictedPrice = Number(lastPrice) * Math.pow(1 + dailyRate, daysDiff);
         // console.log(`预测价格：${predictedPrice}`);
         
-        extendedPriceData.push({
-          date: new Date(currentDate.getTime()),
-          close: new Decimal(predictedPrice),
-          div: null // 预测数据假设没有股息
-        });
+        extendedPriceData.push(createCompatiblePrice(
+          new Date(currentDate.getTime()),
+          predictedPrice,
+          null
+        ));
 
         // 按月推进到下个月的最后一天
         const year = currentDate.getUTCFullYear();
@@ -135,11 +138,11 @@ export async function GET(request: Request) {
         console.log(`天数差：${daysDiff}, 预测价格计算：${Number(lastPrice)} * (1 + ${dailyRate})^${daysDiff}`);
         const predictedPrice = Number(lastPrice) * Math.pow(1 + dailyRate, daysDiff);
         console.log(`预测价格：${predictedPrice}`);
-        extendedPriceData.push({
-          date: new Date(utcEndDate.getTime()),
-          close: new Decimal(predictedPrice),
-          div: null
-        });
+        extendedPriceData.push(createCompatiblePrice(
+          new Date(utcEndDate.getTime()),
+          predictedPrice,
+          null
+        ));
       }
 
       console.log(`预测完成：已添加 ${extendedPriceData.length} 个预测数据点`);
@@ -168,11 +171,11 @@ export async function GET(request: Request) {
         const predictedPrice = Number(lastPrice) * Math.pow(1 + dailyRate, daysDiff);
         console.log(`预测价格：${predictedPrice}`);
         
-        extendedPriceData.push({
-          date: new Date(currentDate.getTime()), // Store a new Date object representing this UTC moment
-          close: new Decimal(predictedPrice),
-          div: null // 预测数据假设没有股息
-        });
+        extendedPriceData.push(createCompatiblePrice(
+          new Date(currentDate.getTime()),
+          predictedPrice,
+          null
+        ));
 
         // Advance currentDate to the last day of the next month, at UTC midnight
         const year = currentDate.getUTCFullYear();
@@ -196,11 +199,11 @@ export async function GET(request: Request) {
         console.log(`天数差：${daysDiff}, 预测价格计算：${Number(lastPrice)} * (1 + ${dailyRate})^${daysDiff}`);
         const predictedPrice = Number(lastPrice) * Math.pow(1 + dailyRate, daysDiff);
         console.log(`预测价格：${predictedPrice}`);
-        extendedPriceData.push({
-          date: new Date(utcEndDate.getTime()),
-          close: new Decimal(predictedPrice),
-          div: null
-        });
+        extendedPriceData.push(createCompatiblePrice(
+          new Date(utcEndDate.getTime()),
+          predictedPrice,
+          null
+        ));
       }
 
       console.log(`预测完成：已添加 ${extendedPriceData.length - priceData.length} 个预测数据点`);
@@ -219,7 +222,7 @@ export async function GET(request: Request) {
       calculateInvestmentGrowth(extendedPriceData, initialInvestment, monthlyInvestmentDate, monthlyInvestmentAmount, true, true); // 传入 true 以获取月度明细
 
 
-    return NextResponse.json({
+    const responseBody = {
       success: true,
       data: {
         input: {
@@ -250,9 +253,18 @@ export async function GET(request: Request) {
         //----
         monthlyBreakdown: monthlyBreakdown, // 每月投资明细
       }
-    });
+    };
+
+    // 记录总体性能
+    const totalDuration = Date.now() - overallStartTime;
+    const responseData = JSON.stringify(responseBody);
+    PerformanceMonitor.logResponseSize('/api/cal', responseData.length);
+    console.log(`✅ [/api/cal] Completed in ${totalDuration}ms`);
+
+    return NextResponse.json(responseBody);
   } catch (error) {
-    console.error('Error in /api/cal:', error);
+    const totalDuration = Date.now() - overallStartTime;
+    console.error(`❌ [/api/cal] Failed in ${totalDuration}ms:`, error);
     return NextResponse.json({ success: false, err: 'Internal Server Error' }, { status: 500 });
   }
 }

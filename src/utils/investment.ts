@@ -1,6 +1,7 @@
 import { Price } from '@prisma/client';
 
 import { MonthlyBreakdownItem } from '@/types';
+import { toNumber } from '@/lib/decimal-utils';
 
 /**
  * 计算投资增长
@@ -20,8 +21,8 @@ export function calculateInvestmentGrowth(
   includeDividends: boolean,
   returnMonthlyBreakdown: boolean = false
 ) {
-  const firstPrice = priceData[0].close.toNumber();
-  const lastPrice = priceData[priceData.length - 1].close.toNumber();
+  const firstPrice = toNumber(priceData[0].close);
+  const lastPrice = toNumber(priceData[priceData.length - 1].close);
   const firstDate = new Date(priceData[0].date);
 
   let currentShares = initialInvestment / firstPrice;
@@ -52,8 +53,8 @@ export function calculateInvestmentGrowth(
     const data = priceDataMap.get(dateStr);
     if (!data) continue;
 
-    const currentPrice = data.close.toNumber();
-    const dividend = includeDividends ? (data.div?.toNumber() || 0) : 0;
+    const currentPrice = toNumber(data.close);
+    const dividend = includeDividends ? toNumber(data.div) || 0 : 0;
     const currentDate = new Date(dateStr);
     const monthKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
 
