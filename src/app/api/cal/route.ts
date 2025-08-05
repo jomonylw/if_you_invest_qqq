@@ -132,7 +132,7 @@ export async function GET(request: Request) {
 
       // 如果 end_date 不是月末，添加最终预测点
       const lastPredictedDateInLoop = extendedPriceData[extendedPriceData.length - 1].date;
-      if (utcEndDate.getTime() > lastPredictedDateInLoop.getTime()) {
+      if (utcEndDate.getTime() > new Date(lastPredictedDateInLoop).getTime()) {
         const daysDiff = Math.floor((utcEndDate.getTime() - Date.UTC(lastDate.getUTCFullYear(), lastDate.getUTCMonth(), lastDate.getUTCDate())) / (1000 * 60 * 60 * 24));
         console.log(`为最终 endDate 添加预测点: ${utcEndDate.toISOString().split('T')[0]}`);
         console.log(`天数差：${daysDiff}, 预测价格计算：${Number(lastPrice)} * (1 + ${dailyRate})^${daysDiff}`);
@@ -193,7 +193,7 @@ export async function GET(request: Request) {
 
       // Add a final prediction point for the exact utcEndDate if it's not already the last day of a month
       const lastPredictedDateInLoop = extendedPriceData[extendedPriceData.length -1].date;
-      if (utcEndDate.getTime() > lastPredictedDateInLoop.getTime()) {
+      if (utcEndDate.getTime() > new Date(lastPredictedDateInLoop).getTime()) {
         const daysDiff = Math.floor((utcEndDate.getTime() - Date.UTC(lastDate.getUTCFullYear(), lastDate.getUTCMonth(), lastDate.getUTCDate())) / (1000 * 60 * 60 * 24));
         console.log(`为最终 endDate 添加预测点: ${utcEndDate.toISOString().split('T')[0]}`);
         console.log(`天数差：${daysDiff}, 预测价格计算：${Number(lastPrice)} * (1 + ${dailyRate})^${daysDiff}`);
