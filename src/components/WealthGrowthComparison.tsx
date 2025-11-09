@@ -35,33 +35,32 @@ export default function WealthGrowthComparison({ results }: InvestmentResultsCha
       <Card
         elevation={0}
         sx={{
-          mb: 4,
+          mb: 3,
           background: parseFloat(nominalTotalReturn) >= 0
             ? 'linear-gradient(135deg, rgba(76, 175, 80, 0.08) 0%, rgba(129, 199, 132, 0.08) 100%)'
             : 'linear-gradient(135deg, rgba(244, 67, 54, 0.08) 0%, rgba(239, 154, 154, 0.08) 100%)',
-          borderRadius: 4,
+          borderRadius: 3,
           border: '1px solid rgba(255, 255, 255, 0.2)',
           backdropFilter: 'blur(6px)',
           overflow: 'visible'
         }}
         className="hover-lift"
       >
-        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+        <CardContent sx={{ p: { xs: 2, md: 3 } }}>
           <Typography
             variant="h5"
             component="h3"
             sx={{
               textAlign: 'center',
-              mb: 4,
+              mb: 3,
               fontWeight: 700,
-              fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' },
+              fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.5rem' },
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 2
+              gap: 1
             }}
           >
-            {/* <span style={{ fontSize: 'inherit' }}>💎</span> */}
             <span
               style={{
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -72,7 +71,6 @@ export default function WealthGrowthComparison({ results }: InvestmentResultsCha
             >
               Wealth Growth Comparison
             </span>
-            {/* <span style={{ fontSize: 'inherit' }}>📈</span> */}
           </Typography>
 
           <Box sx={{
@@ -301,29 +299,29 @@ export default function WealthGrowthComparison({ results }: InvestmentResultsCha
       </Card>
       
       {/* 详细统计数据 */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, mb: 4 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 3 }}>
         {/* 价格回报组 */}
         <Card
           elevation={0}
           className="hover-lift"
           sx={{
             background: 'rgba(255, 255, 255, 0.9)',
-            borderRadius: 4,
+            borderRadius: 3,
             border: '1px solid rgba(255, 255, 255, 0.2)',
             backdropFilter: 'blur(6px)'
           }}
         >
-          <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+          <CardContent sx={{ p: { xs: 2, md: 3 } }}>
             <Typography
               variant="h6"
               sx={{
                 fontWeight: 700,
                 color: 'primary.main',
-                mb: 3,
+                mb: 2,
                 display: 'flex',
                 alignItems: 'center',
                 gap: 1,
-                fontSize: { xs: '1.1rem', md: '1.25rem' }
+                fontSize: { xs: '1rem', md: '1.1rem' }
               }}
             >
               📈 Price Returns
@@ -331,71 +329,71 @@ export default function WealthGrowthComparison({ results }: InvestmentResultsCha
             <Box sx={{
               display: 'grid',
               gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
-              gap: { xs: 2, md: 3 }
+              gap: { xs: 1.5, md: 2 }
             }}>
               <Box sx={{
                 background: 'linear-gradient(135deg, rgba(158, 158, 158, 0.1) 0%, rgba(189, 189, 189, 0.1) 100%)',
-                p: 3,
-                borderRadius: 3,
+                p: 2,
+                borderRadius: 2,
                 border: '1px solid rgba(158, 158, 158, 0.2)',
                 backdropFilter: 'blur(3px)',
                 transition: 'all 0.3s ease',
                 '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)' }
               }}>
-                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
                   Nominal Price Return:
                 </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.primary', fontSize: { xs: '1rem', md: '1.1rem' } }}>
                   {formatPercentage(nominalPriceReturn)}
                 </Typography>
               </Box>
               <Box sx={{
                 background: 'linear-gradient(135deg, rgba(158, 158, 158, 0.1) 0%, rgba(189, 189, 189, 0.1) 100%)',
-                p: 3,
-                borderRadius: 3,
+                p: 2,
+                borderRadius: 2,
                 border: '1px solid rgba(158, 158, 158, 0.2)',
                 backdropFilter: 'blur(5px)',
                 transition: 'all 0.3s ease',
                 '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)' }
               }}>
-                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
                   Annualized Price Return:
                 </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.primary', fontSize: { xs: '1rem', md: '1.1rem' } }}>
                   {formatPercentage(annualizedPriceReturn)}
                 </Typography>
               </Box>
               <Box sx={{
                 background: 'linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.1) 100%)',
-                p: 3,
-                borderRadius: 3,
+                p: 2,
+                borderRadius: 2,
                 border: '1px solid rgba(76, 175, 80, 0.2)',
                 backdropFilter: 'blur(5px)',
                 transition: 'all 0.3s ease',
                 '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 8px 25px rgba(76, 175, 80, 0.2)' }
               }}>
-                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
                   Nominal Price Return<br />
                   (Including Dividends)
                 </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'success.dark' }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'success.dark', fontSize: { xs: '1rem', md: '1.1rem' } }}>
                   {formatPercentage(nominalPriceReturnWithDividends)}
                 </Typography>
               </Box>
               <Box sx={{
                 background: 'linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.1) 100%)',
-                p: 3,
-                borderRadius: 3,
+                p: 2,
+                borderRadius: 2,
                 border: '1px solid rgba(76, 175, 80, 0.2)',
                 backdropFilter: 'blur(5px)',
                 transition: 'all 0.3s ease',
                 '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 8px 25px rgba(76, 175, 80, 0.2)' }
               }}>
-                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
                   Annualized Price Return<br />
                   (Including Dividends)
                 </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'success.dark' }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'success.dark', fontSize: { xs: '1rem', md: '1.1rem' } }}>
                   {formatPercentage(annualizedPriceReturnWithDividends)}
                 </Typography>
               </Box>
@@ -409,22 +407,22 @@ export default function WealthGrowthComparison({ results }: InvestmentResultsCha
           className="hover-lift"
           sx={{
             background: 'rgba(255, 255, 255, 0.9)',
-            borderRadius: 4,
+            borderRadius: 3,
             border: '1px solid rgba(255, 255, 255, 0.2)',
             backdropFilter: 'blur(10px)'
           }}
         >
-          <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+          <CardContent sx={{ p: { xs: 2, md: 3 } }}>
             <Typography
               variant="h6"
               sx={{
                 fontWeight: 700,
                 color: 'primary.main',
-                mb: 3,
+                mb: 2,
                 display: 'flex',
                 alignItems: 'center',
                 gap: 1,
-                fontSize: { xs: '1.1rem', md: '1.25rem' }
+                fontSize: { xs: '1rem', md: '1.1rem' }
               }}
             >
               💼 Investment Summary
@@ -432,18 +430,18 @@ export default function WealthGrowthComparison({ results }: InvestmentResultsCha
             <Box sx={{ display: 'flex', justifyContent: { xs: 'center', sm: 'flex-start' } }}>
               <Box sx={{
                 background: 'linear-gradient(135deg, rgba(33, 150, 243, 0.1) 0%, rgba(100, 181, 246, 0.1) 100%)',
-                p: 4,
-                borderRadius: 3,
+                p: 3,
+                borderRadius: 2,
                 border: '1px solid rgba(33, 150, 243, 0.2)',
                 backdropFilter: 'blur(5px)',
                 transition: 'all 0.3s ease',
                 width: { xs: '100%', sm: '50%' },
                 '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 8px 25px rgba(33, 150, 243, 0.2)' }
               }}>
-                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
                   💰 Total Invested:
                 </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.dark' }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.dark', fontSize: { xs: '1rem', md: '1.1rem' } }}>
                   {formatCurrency(totalInvested)}
                 </Typography>
               </Box>
@@ -457,22 +455,22 @@ export default function WealthGrowthComparison({ results }: InvestmentResultsCha
           className="hover-lift"
           sx={{
             background: 'rgba(255, 255, 255, 0.9)',
-            borderRadius: 4,
+            borderRadius: 3,
             border: '1px solid rgba(255, 255, 255, 0.2)',
             backdropFilter: 'blur(10px)'
           }}
         >
-          <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+          <CardContent sx={{ p: { xs: 2, md: 3 } }}>
             <Typography
               variant="h6"
               sx={{
                 fontWeight: 700,
                 color: 'primary.main',
-                mb: 3,
+                mb: 2,
                 display: 'flex',
                 alignItems: 'center',
                 gap: 1,
-                fontSize: { xs: '1.1rem', md: '1.25rem' }
+                fontSize: { xs: '1rem', md: '1.1rem' }
               }}
             >
               📊 Growth (Excluding Dividends)
@@ -480,54 +478,54 @@ export default function WealthGrowthComparison({ results }: InvestmentResultsCha
             <Box sx={{
               display: 'grid',
               gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
-              gap: { xs: 2, md: 3 }
+              gap: { xs: 1.5, md: 2 }
             }}>
               <Box sx={{
                 background: 'linear-gradient(135deg, rgba(158, 158, 158, 0.1) 0%, rgba(189, 189, 189, 0.1) 100%)',
-                p: 3,
-                borderRadius: 3,
+                p: 2,
+                borderRadius: 2,
                 border: '1px solid rgba(158, 158, 158, 0.2)',
                 backdropFilter: 'blur(5px)',
                 transition: 'all 0.3s ease',
                 '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)' }
               }}>
-                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
                   Nominal Total Return:
                 </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.primary', fontSize: { xs: '1rem', md: '1.1rem' } }}>
                   {formatPercentage(nominalTotalReturnWithoutDividends)}
                 </Typography>
               </Box>
               <Box sx={{
                 background: 'linear-gradient(135deg, rgba(158, 158, 158, 0.1) 0%, rgba(189, 189, 189, 0.1) 100%)',
-                p: 3,
-                borderRadius: 3,
+                p: 2,
+                borderRadius: 2,
                 border: '1px solid rgba(158, 158, 158, 0.2)',
                 backdropFilter: 'blur(5px)',
                 transition: 'all 0.3s ease',
                 '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)' }
               }}>
-                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
                   Annualized Total Return:
                 </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.primary', fontSize: { xs: '1rem', md: '1.1rem' } }}>
                   {formatPercentage(annualizedTotalReturnWithoutDividends)}
                 </Typography>
               </Box>
               <Box sx={{
                 background: 'linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.1) 100%)',
-                p: 3,
-                borderRadius: 3,
+                p: 2,
+                borderRadius: 2,
                 border: '1px solid rgba(76, 175, 80, 0.2)',
                 backdropFilter: 'blur(5px)',
                 transition: 'all 0.3s ease',
                 gridColumn: { xs: '1', sm: '1 / -1', md: 'auto' },
                 '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 8px 25px rgba(76, 175, 80, 0.2)' }
               }}>
-                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
                   💰 Investment Grew To:
                 </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'success.dark' }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'success.dark', fontSize: { xs: '1rem', md: '1.1rem' } }}>
                   {formatCurrency(investmentGrewToPrice)}
                 </Typography>
               </Box>
@@ -541,22 +539,22 @@ export default function WealthGrowthComparison({ results }: InvestmentResultsCha
           className="hover-lift"
           sx={{
             background: 'rgba(255, 255, 255, 0.9)',
-            borderRadius: 4,
+            borderRadius: 3,
             border: '1px solid rgba(255, 255, 255, 0.2)',
             backdropFilter: 'blur(10px)'
           }}
         >
-          <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+          <CardContent sx={{ p: { xs: 2, md: 3 } }}>
             <Typography
               variant="h6"
               sx={{
                 fontWeight: 700,
                 color: 'primary.main',
-                mb: 3,
+                mb: 2,
                 display: 'flex',
                 alignItems: 'center',
                 gap: 1,
-                fontSize: { xs: '1.1rem', md: '1.25rem' }
+                fontSize: { xs: '1rem', md: '1.1rem' }
               }}
             >
               🎉 Growth (Including Dividends)
@@ -564,51 +562,51 @@ export default function WealthGrowthComparison({ results }: InvestmentResultsCha
             <Box sx={{
               display: 'grid',
               gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
-              gap: { xs: 2, md: 3 }
+              gap: { xs: 1.5, md: 2 }
             }}>
               <Box sx={{
                 background: 'linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.1) 100%)',
-                p: 3,
-                borderRadius: 3,
+                p: 2,
+                borderRadius: 2,
                 border: '1px solid rgba(76, 175, 80, 0.2)',
                 backdropFilter: 'blur(5px)',
                 transition: 'all 0.3s ease',
                 '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 8px 25px rgba(76, 175, 80, 0.2)' }
               }}>
-                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
                   Nominal Total Return:
                 </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'success.dark' }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'success.dark', fontSize: { xs: '1rem', md: '1.1rem' } }}>
                   {formatPercentage(nominalTotalReturn)}
                 </Typography>
               </Box>
               <Box sx={{
                 background: 'linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.1) 100%)',
-                p: 3,
-                borderRadius: 3,
+                p: 2,
+                borderRadius: 2,
                 border: '1px solid rgba(76, 175, 80, 0.2)',
                 backdropFilter: 'blur(5px)',
                 transition: 'all 0.3s ease',
                 '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 8px 25px rgba(76, 175, 80, 0.2)' }
               }}>
-                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
                   Annualized Total Return:
                 </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'success.dark' }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'success.dark', fontSize: { xs: '1rem', md: '1.1rem' } }}>
                   {formatPercentage(annualizedTotalReturn)}
                 </Typography>
               </Box>
               <Box sx={{
                 background: 'linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(129, 199, 132, 0.15) 100%)',
-                p: 3,
-                borderRadius: 3,
+                p: 2,
+                borderRadius: 2,
                 border: '1px solid rgba(76, 175, 80, 0.3)',
                 backdropFilter: 'blur(5px)',
                 transition: 'all 0.3s ease',
                 gridColumn: { xs: '1', sm: '1 / -1', md: 'auto' },
                 '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 8px 25px rgba(76, 175, 80, 0.3)' }
               }}>
-                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
                   🎯 Investment Grew To:
                 </Typography>
                 <Typography
@@ -616,7 +614,7 @@ export default function WealthGrowthComparison({ results }: InvestmentResultsCha
                   sx={{
                     fontWeight: 'bold',
                     color: 'success.dark',
-                    fontSize: { xs: '1.25rem', md: '1.5rem' }
+                    fontSize: { xs: '1.1rem', md: '1.25rem' }
                   }}
                 >
                   <span>$<CountUp

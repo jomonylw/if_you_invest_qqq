@@ -33,7 +33,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
           <div className={`${sizeClasses[size]} relative`}>
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-ping opacity-75"></div>
             <div className="relative bg-gradient-to-r from-blue-600 to-purple-600 rounded-full h-full w-full flex items-center justify-center">
-              <span className="text-white text-xl">📈</span>
+              <span className="text-white text-lg">📈</span>
             </div>
           </div>
         );

@@ -81,24 +81,22 @@ export default function Home() {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-    <div className="container mx-auto p-2 md:p-4">
+    <div className="container mx-auto p-1 md:p-2">
       {/* Enhanced Header Section */}
-      <header className="text-center mb-8 md:mb-12 mt-6 md:mt-8 lg:mt-12">
+      <header className="text-center mb-4 md:mb-6 mt-3 md:mt-4">
         {/* Main Title */}
-        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold flex items-center justify-center gap-2 md:gap-3 mb-4 md:mb-6 fade-in title-hover-effect title-mobile-optimize">
-          <span className="animate-pulse text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl filter drop-shadow-lg">📈</span>
+        <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold flex items-center justify-center gap-2 mb-2 fade-in title-hover-effect title-mobile-optimize">
+          <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl filter drop-shadow-lg">📈</span>
           <span className="title-gradient font-extrabold tracking-tight">
             If You Invest QQQ
           </span>
-          <span className="animate-bounce text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl filter drop-shadow-lg">💰</span>
+          <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl filter drop-shadow-lg">💰</span>
         </h1>
 
         {/* Subtitle */}
-        <div className="mx-auto max-w-2xl slide-up">
-          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 dark:text-gray-300 font-medium leading-relaxed">
-            {/* <span className="inline-block mr-2 animate-pulse">✨</span> */}
+        <div className="mx-auto max-w-xl slide-up">
+          <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-300 font-medium leading-relaxed">
             <span className="font-semibold">Discover the potential of your QQQ investments</span>
-            {/* <span className="inline-block ml-2 animate-pulse">🚀</span> */}
           </p>
         </div>
       </header>
@@ -114,13 +112,13 @@ export default function Home() {
       {/* {calApiLoading && <LoadingSpinner />} */}
 
       {/* Simple Footer */}
-      <footer className="py-2 text-center text-white/70 text-xs md:text-sm mt-2 space-y-2">
+      <footer className="py-3 text-center text-white/70 text-xs mt-4">
         {/* Disclaimer */}
-        <p className="text-xs md:text-sm text-white/60 max-w-3xl mx-auto leading-relaxed">
-          <span className="inline-block mr-2">⚠️</span>
+        <p className="text-xs text-white/60 max-w-2xl mx-auto leading-relaxed">
+          <span className="inline-block mr-1">⚠️</span>
           <strong>Disclaimer:</strong> This calculator is for educational purposes only. Past performance does not guarantee future results and does not constitute investment advice.</p>
         {/* Copyright */}
-        <p>© {new Date().getFullYear()} If You Invest QQQ</p>
+        <p className="mt-1">© {new Date().getFullYear()} If You Invest QQQ</p>
       </footer>
     </div>
     </LocalizationProvider>

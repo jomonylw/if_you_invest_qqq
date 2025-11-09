@@ -110,24 +110,24 @@ export default function InvestmentForm({
 
   return (
     <Card
-      className="mb-8 mt-8 glass-effect"
+      className="mb-4 mt-4 glass-effect"
       elevation={0}
       sx={{
-        borderRadius: 4,
+        borderRadius: 3,
         background: 'rgba(255, 255, 255, 0.95)',
         backdropFilter: 'blur(20px)',
         border: '1px solid rgba(255, 255, 255, 0.2)',
-        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
+        boxShadow: '0 15px 35px rgba(0, 0, 0, 0.1)',
         overflow: 'visible',
         '@media (max-width: 768px)': {
-          margin: '1rem 0',
-          borderRadius: 3,
+          margin: '0.5rem 0',
+          borderRadius: 2,
         }
       }}
     >
       <CardContent sx={{
-        padding: { xs: 2, sm: 3, md: 4 },
-        '&:last-child': { paddingBottom: { xs: 2, sm: 3, md: 4 } }
+        padding: { xs: 1.5, sm: 2, md: 3 },
+        '&:last-child': { paddingBottom: { xs: 1.5, sm: 2, md: 3 } }
       }}>
 
         <PriceChart
@@ -142,15 +142,14 @@ export default function InvestmentForm({
           sx={{
             textAlign: 'center',
             fontWeight: 700,
-            my: { xs: 2, md: 4 },
-            fontSize: { xs: '1.5rem', sm: '2rem', md: '2.25rem' },
+            my: { xs: 1, md: 2 },
+            fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' },
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 2
+            gap: 1
           }}
         >
-          {/* <span style={{ fontSize: 'inherit' }}>🎯</span> */}
           <span
             style={{
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -163,28 +162,28 @@ export default function InvestmentForm({
           </span>
         </Typography>
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-6">
+        <form onSubmit={handleSubmit} className="mt-3 space-y-4">
           {/* 日期范围选择区域 */}
           <Box sx={{
             background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)',
-            p: { xs: 2, md: 3 },
-            borderRadius: 3,
+            p: { xs: 1.5, md: 2 },
+            borderRadius: 2,
             border: '1px solid rgba(255, 255, 255, 0.2)',
-            mb: 3,
+            mb: 2,
             backdropFilter: 'blur(10px)'
           }}>
             <Typography variant="h6" sx={{
-              mb: 3,
+              mb: 2,
               fontWeight: 600,
               color: 'primary.dark',
               display: 'flex',
               alignItems: 'center',
               gap: 1,
-              fontSize: { xs: '1rem', md: '1.25rem' }
+              fontSize: { xs: '0.9rem', md: '1rem' }
             }}>
               📅 Investment Date Range
             </Typography>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
             <DatePicker
               label="Start Date"
               value={formParams.start_date ? parseISO(formParams.start_date) : null}
@@ -220,24 +219,24 @@ export default function InvestmentForm({
           {/* 投资金额输入区域 */}
           <Box sx={{
             background: 'linear-gradient(135deg, rgba(240, 147, 251, 0.1) 0%, rgba(245, 87, 108, 0.1) 100%)',
-            p: { xs: 2, md: 3 },
-            borderRadius: 3,
+            p: { xs: 1.5, md: 2 },
+            borderRadius: 2,
             border: '1px solid rgba(255, 255, 255, 0.2)',
-            mb: 3,
+            mb: 2,
             backdropFilter: 'blur(10px)'
           }}>
             <Typography variant="h6" sx={{
-              mb: 3,
+              mb: 2,
               fontWeight: 600,
               color: 'primary.dark',
               display: 'flex',
               alignItems: 'center',
               gap: 1,
-              fontSize: { xs: '1rem', md: '1.25rem' }
+              fontSize: { xs: '0.9rem', md: '1rem' }
             }}>
               💵 Investment Amounts
             </Typography>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
               <TextField
                 label="Initial Investment"
                 name="initial_investment"
@@ -295,20 +294,20 @@ export default function InvestmentForm({
           {/* 预测年化收益率区域 */}
           <Box sx={{
             background: 'linear-gradient(135deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%)',
-            p: { xs: 2, md: 3 },
-            borderRadius: 3,
+            p: { xs: 1.5, md: 2 },
+            borderRadius: 2,
             border: '1px solid rgba(255, 255, 255, 0.2)',
-            mb: 3,
+            mb: 2,
             backdropFilter: 'blur(10px)'
           }}>
             <Typography variant="h6" sx={{
-              mb: 3,
+              mb: 2,
               fontWeight: 600,
               color: 'primary.dark',
               display: 'flex',
               alignItems: 'center',
               gap: 1,
-              fontSize: { xs: '1rem', md: '1.25rem' }
+              fontSize: { xs: '0.9rem', md: '1rem' }
             }}>
               🎯 Predicted Annualized Return
             </Typography>
@@ -318,7 +317,7 @@ export default function InvestmentForm({
                   <Button
                     variant={formParams.predicted_annualized_return === annualReturns.all ? "contained" : "outlined"}
                     onClick={() => setFormParams(prev => ({ ...prev, predicted_annualized_return: annualReturns.all }))}
-                    sx={{ width: '100%', borderRadius: 2, transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.02)' } }}
+                    sx={{ width: '100%', borderRadius: 2, transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.02)' }, fontSize: { xs: '0.8rem', sm: '0.9rem' } }}
                   >
                     All Period: <span style={{ backgroundColor: formParams.predicted_annualized_return === annualReturns.all ? '#004d40' : '#4fc3f7', color: formParams.predicted_annualized_return === annualReturns.all ? '#ffffff' : '#004c8c', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px', fontWeight: 'bold' }}>{annualReturns.all}%</span>
                   </Button>
@@ -327,7 +326,7 @@ export default function InvestmentForm({
                   <Button
                     variant={formParams.predicted_annualized_return === annualReturns.tenYears ? "contained" : "outlined"}
                     onClick={() => setFormParams(prev => ({ ...prev, predicted_annualized_return: annualReturns.tenYears }))}
-                    sx={{ width: '100%', borderRadius: 2, transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.02)' } }}
+                    sx={{ width: '100%', borderRadius: 2, transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.02)' }, fontSize: { xs: '0.8rem', sm: '0.9rem' } }}
                   >
                     Recent 10 Years: <span style={{ backgroundColor: formParams.predicted_annualized_return === annualReturns.tenYears ? '#004d40' : '#4fc3f7', color: formParams.predicted_annualized_return === annualReturns.tenYears ? '#ffffff' : '#004c8c', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px', fontWeight: 'bold' }}>{annualReturns.tenYears}%</span>
                   </Button>
@@ -336,7 +335,7 @@ export default function InvestmentForm({
                   <Button
                     variant={formParams.predicted_annualized_return === annualReturns.fiveYears ? "contained" : "outlined"}
                     onClick={() => setFormParams(prev => ({ ...prev, predicted_annualized_return: annualReturns.fiveYears }))}
-                    sx={{ width: '100%', borderRadius: 2, transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.02)' } }}
+                    sx={{ width: '100%', borderRadius: 2, transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.02)' }, fontSize: { xs: '0.8rem', sm: '0.9rem' } }}
                   >
                     Recent 5 Years: <span style={{ backgroundColor: formParams.predicted_annualized_return === annualReturns.fiveYears ? '#004d40' : '#4fc3f7', color: formParams.predicted_annualized_return === annualReturns.fiveYears ? '#ffffff' : '#004c8c', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px', fontWeight: 'bold' }}>{annualReturns.fiveYears}%</span>
                   </Button>
@@ -349,7 +348,7 @@ export default function InvestmentForm({
                                formParams.predicted_annualized_return !== annualReturns.tenYears &&
                                formParams.predicted_annualized_return !== annualReturns.fiveYears) ? "contained" : "outlined"}
                     onClick={() => setFormParams(prev => ({ ...prev, predicted_annualized_return: '' }))}
-                    sx={{ width: '100%', borderRadius: 2, transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.02)' } }}
+                    sx={{ width: '100%', borderRadius: 2, transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.02)' }, fontSize: { xs: '0.8rem', sm: '0.9rem' } }}
                   >
                     Custom
                   </Button>
@@ -370,9 +369,6 @@ export default function InvestmentForm({
                formParams.predicted_annualized_return !== (annualReturns as {all: string, tenYears: string, fiveYears: string}).fiveYears)
             ) && (
               <Box sx={{ mt: 2 }}>
-                {/* <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 'bold', color: 'primary.dark' }}>
-                  Custom Annualized Return
-                </Typography> */}
                 <TextField
                   label="Custom Annualized Return"
                   name="predicted_annualized_return"
@@ -408,12 +404,12 @@ export default function InvestmentForm({
             size="large"
             fullWidth
             sx={{
-              mt: 4,
-              py: { xs: 2, md: 2.5 },
+              mt: 3,
+              py: { xs: 1.5, md: 2 },
               fontWeight: 'bold',
-              fontSize: { xs: '1rem', sm: '1.1rem', md: '1.2rem' },
+              fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' },
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              borderRadius: 3,
+              borderRadius: 2,
               boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)',
               border: 'none',
               color: 'white',
@@ -438,9 +434,7 @@ export default function InvestmentForm({
               </Box>
             ) : (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                {/* <span>🧮</span> */}
                 <span>Calculate Returns</span>
-                {/* <span>📊</span> */}
               </Box>
             )}
           </Button>
@@ -480,9 +474,9 @@ export default function InvestmentForm({
         
         {/* 结果显示区域 */}
         {apiResult && (
-          <Box className="slide-up" sx={{ mt: 6 }}>
+          <Box className="slide-up" sx={{ mt: 4 }}>
             <Divider sx={{
-              my: 4,
+              my: 3,
               background: 'linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.3), transparent)',
               height: 2,
               border: 'none'
@@ -493,15 +487,14 @@ export default function InvestmentForm({
               sx={{
                 textAlign: 'center',
                 fontWeight: 700,
-                my: 4,
-                fontSize: { xs: '1.5rem', sm: '2rem', md: '2.25rem' },
+                my: 2,
+                fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' },
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: 2
+                gap: 1
               }}
             >
-              {/* <span style={{ fontSize: 'inherit' }}>📊</span> */}
               <span
                 style={{
                   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -512,12 +505,11 @@ export default function InvestmentForm({
               >
                 Investment Results
               </span>
-              {/* <span style={{ fontSize: 'inherit' }}>🎉</span> */}
             </Typography>
             <Box sx={{
               background: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: 4,
-              p: { xs: 2, md: 3 },
+              borderRadius: 3,
+              p: { xs: 1.5, md: 2 },
               backdropFilter: 'blur(10px)',
               border: '1px solid rgba(255, 255, 255, 0.2)'
             }}>

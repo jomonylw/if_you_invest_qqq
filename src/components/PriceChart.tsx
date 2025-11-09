@@ -537,15 +537,14 @@ const PriceChartComponent = ({ calFormStartDate, calFormEndDate, onDatesChange }
         sx={{
           textAlign: 'center',
           fontWeight: 700,
-          my: { xs: 2, md: 4 },
-          fontSize: { xs: '1.5rem', sm: '2rem', md: '2.25rem' },
+          my: { xs: 1.5, md: 2 },
+          fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' },
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: 2
+          gap: 1
         }}
       >
-        {/* <span style={{ fontSize: 'inherit' }}>📈</span> */}
         <span
           style={{
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -560,7 +559,7 @@ const PriceChartComponent = ({ calFormStartDate, calFormEndDate, onDatesChange }
       {chartOption && (
         <ReactECharts
           option={chartOption}
-          style={{ height: '600px', width: '100%' }}
+          style={{ height: '400px', width: '100%' }}
           notMerge={true}
           lazyUpdate={true}
           onEvents={onEvents}

@@ -403,43 +403,30 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
   };
 
   return (
-    <div className="mt-6">
-      {/* <CardContent> */}
-        {/* <Typography
-          variant="h5"
-          component="h2"
-          sx={{
-            textAlign: 'center',
-            fontWeight: 600,
-            my: 3,
-            color: 'primary.main'
-          }}
-        >
-          Calculation Results
-        </Typography> */}
-        
+    <div className="mt-4">
         <WealthGrowthComparison results={results} />
-        {/* <h2 className="text-xl font-semibold mb-4 text-center pt-5">Monthly Breakdown</h2> */}
+        
         <Typography
           variant="h5"
           component="h2"
           sx={{
             textAlign: 'center',
             fontWeight: 600,
-            my: 2,
-            color: 'primary.main'
+            my: 1.5,
+            color: 'primary.main',
+            fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.5rem' }
           }}
         >
           Monthly Breakdown
         </Typography>
+        
         <ReactECharts
           option={chartOption}
-          style={{ height: 500, width: '100%' }}
-          className="mt-4"
+          style={{ height: 400, width: '100%' }}
+          className="mt-3"
           ref={barChartRef}
           onEvents={{
             'mouseover': (params: { seriesName: string; dataIndex: number; componentType: string }) => {
-              // Ensure the event is from a series hover (e.g., a bar)
               if (params.componentType === 'series' && params.seriesName) {
                 interactionStateRef.current = 'bar_hover';
                 updatePieChartForDate(params.dataIndex, params.seriesName);
@@ -448,21 +435,16 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
             'mouseout': (params: { seriesName: string; componentType: string }) => {
               if (params.componentType === 'series') {
                 interactionStateRef.current = null;
-                // If an axis pointer is active, update pie to that date without specific bar highlight
                 if (latestAxisDataIndexRef.current !== null && monthlyBreakdown[latestAxisDataIndexRef.current]) {
                   updatePieChartForDate(latestAxisDataIndexRef.current, null);
                 }
-                // If no axis pointer active (e.g., mouse moved completely out),
-                // 'globalout' will eventually reset to the last day.
               }
             },
             'updateAxisPointer': (params: { type: string; currTrigger?: string; dataIndex?: number; axesInfo?: Array<{axisDim: string, axisIndex: number, value: number}> }) => {
               let currentXAxisIndex: number | undefined;
-               // For category axis with tooltip trigger 'axis', params.dataIndex is often the direct index.
               if (params.currTrigger === 'axis' && typeof params.dataIndex === 'number') {
                 currentXAxisIndex = params.dataIndex;
               } else if (params.axesInfo && params.axesInfo[0] && params.axesInfo[0].axisDim === 'x') {
-                 // Fallback or primary way for some ECharts versions/configurations
                 currentXAxisIndex = params.axesInfo[0].value;
               }
 
@@ -477,10 +459,9 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
               interactionStateRef.current = null;
               latestAxisDataIndexRef.current = null;
               if (monthlyBreakdown.length > 0) {
-                updatePieChartForDate(monthlyBreakdown.length - 1, null); // Revert to last day
+                updatePieChartForDate(monthlyBreakdown.length - 1, null);
               }
             },
-            // Keep existing legendselectchanged if needed, or remove if it conflicts or is not desired with new logic
             'legendselectchanged': (params: { name: string; selected: { [key: string]: boolean } }) => {
               if (pieChartRef.current) {
                 const lastDataIndex = monthlyBreakdown.length - 1;
@@ -499,11 +480,10 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                   const isSelected = params.selected[item.name];
                   return {
                     ...item,
-                    value: isSelected ? item.value : 0 // Keep value or set to 0 if unselected
+                    value: isSelected ? item.value : 0
                   };
                 });
 
-                // Similar calculation for totalPieData based on selected series
                 let totalInvestedValue = 0;
                 let totalReturnValue = 0;
 
@@ -539,20 +519,22 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
           sx={{
             textAlign: 'center',
             fontWeight: 600,
-            my: 2,
-            color: 'primary.main'
+            my: 1.5,
+            color: 'primary.main',
+            fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.5rem' }
           }}
           dangerouslySetInnerHTML={{
             __html: formatDateWithTag(monthlyBreakdown[monthlyBreakdown.length - 1].date)
           }}
         />
+        
         <ReactECharts
           option={{
             title: {
               left: 'center',
-              top: 10,
+              top: 5,
               textStyle: {
-                fontSize: 20,
+                fontSize: 16,
                 fontWeight: 'bold',
                 color: '#333'
               }
@@ -579,7 +561,6 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                 const isReturn = params.name.includes('Return');
                 const isTotal = params.name.includes('Total');
 
-                // Color-code the values based on type
                 let valueColor = '#333';
                 let percentColor = '#666';
                 if (isReturn && params.value > 0) {
@@ -614,12 +595,12 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
             },
             series: [
               {
-                id: PIE_SERIES_ID_DETAIL, // Added ID
+                id: PIE_SERIES_ID_DETAIL,
                 type: 'pie',
                 radius: ['0%', '60%'],
                 center: ['50%', '50%'],
                 itemStyle: {
-                  borderRadius: 4 // 圆角
+                  borderRadius: 4
                 },
                 data: [
                   { value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].initialInvestmentAmount), name: 'Initial Investment Amount', itemStyle: { color: '#1976D2', borderRadius: 4 } },
@@ -654,12 +635,12 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                 }
               },
               {
-                id: PIE_SERIES_ID_TOTAL, // Added ID
+                id: PIE_SERIES_ID_TOTAL,
                 type: 'pie',
                 radius: ['60%', '75%'],
                 center: ['50%', '50%'],
                 itemStyle: {
-                  borderRadius: 4 // 圆角
+                  borderRadius: 4
                 },
                 data: [
                   {
@@ -667,14 +648,14 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                            parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].monthlyInvestmentAmount) +
                            parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].dividendAmount),
                     name: 'Total Invested',
-                    itemStyle: { color: '#4B0082', borderRadius: 4 } // 深紫色表示Total Invested，与内层颜色区别且符合主题
+                    itemStyle: { color: '#4B0082', borderRadius: 4 }
                   },
                   {
                     value: parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].initialInvestmentReturn) +
                            parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].monthlyInvestmentReturn) +
                            parseFloat(monthlyBreakdown[monthlyBreakdown.length - 1].dividendReturn),
                     name: 'Total Return',
-                    itemStyle: { color: '#008B8B', borderRadius: 4 } // 深青色表示Total Return，与内层颜色区别且符合主题
+                    itemStyle: { color: '#008B8B', borderRadius: 4 }
                   }
                 ],
                 emphasis: {
@@ -703,8 +684,8 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
               }
             ]
           }}
-          style={{ height: 400, width: '100%' }}
-          className="mt-4"
+          style={{ height: 320, width: '100%' }}
+          className="mt-3"
           ref={pieChartRef}
           onEvents={{
             'mouseover': (params: { dataIndex: number; name: string; seriesIndex: number }) => {
@@ -728,10 +709,9 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                 } else if (totalIndex !== -1 && barChartRef.current) {
                   barChartRef.current.getEchartsInstance().dispatchAction({
                     type: 'highlight',
-                    seriesIndex: totalIndex + 6 // 由于Total Invested和Total Return在series数组中的索引是6和7
+                    seriesIndex: totalIndex + 6
                   });
                 }
-                // 更新饼状图标题以反映当前高亮的系列
                 const titleElement = document.getElementById('pie-chart-title');
                 if (titleElement) {
                   titleElement.innerHTML = formatDateWithTag(params.name, '');
@@ -759,10 +739,9 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
                 } else if (totalIndex !== -1 && barChartRef.current) {
                   barChartRef.current.getEchartsInstance().dispatchAction({
                     type: 'downplay',
-                    seriesIndex: totalIndex + 6 // 由于Total Invested和Total Return在series数组中的索引是6和7
+                    seriesIndex: totalIndex + 6
                   });
                 }
-                // 恢复饼状图标题为默认值（最后一天的日期）
                 const titleElement = document.getElementById('pie-chart-title');
                 if (titleElement) {
                   titleElement.innerHTML = formatDateWithTag(monthlyBreakdown[monthlyBreakdown.length - 1].date);
@@ -792,9 +771,9 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
             }
           }}
         />
-      {/* </CardContent> */}
+      
       {/* 链接卡片：如何投资 QQQ */}
-      <div className="mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-md p-5 border border-blue-100 hover:shadow-lg hover:border-blue-200 transition-all duration-200">
+      <div className="mt-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-md p-4 border border-blue-100 hover:shadow-lg hover:border-blue-200 transition-all duration-200">
         <a
           href="https://jomonylw.github.io/en/posts/1728723295012-invest-qqq"
           target="_blank"
@@ -803,12 +782,12 @@ export default function InvestmentResultsChart({ results }: InvestmentResultsCha
           className="block"
         >
           <div className="flex items-center">
-            <div className="mr-4 text-4xl">👉</div>
+            <div className="mr-3 text-3xl">👉</div>
             <div className="flex-1">
-              <Typography variant="h6" component="h3" sx={{ color: 'primary.main', fontWeight: 'bold', mb: 1 }}>
+              <Typography variant="h6" component="h3" sx={{ color: 'primary.main', fontWeight: 'bold', mb: 0.5, fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' } }}>
                 How to Invest in QQQ ETF
               </Typography>
-              <div className="flex items-center text-blue-600 text-sm font-medium">
+              <div className="flex items-center text-blue-600 text-xs sm:text-sm font-medium">
                 Read guide <span className="ml-1">→</span>
               </div>
             </div>
