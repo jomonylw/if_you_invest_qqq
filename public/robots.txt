@@ -1,0 +1,44 @@
+User-agent: *
+Allow: /
+
+# Block API endpoints from indexing
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+Disallow: /private/
+
+# Allow specific files
+Allow: /favicon.ico
+Allow: /apple-touch-icon.png
+Allow: /favicon-*.png
+Allow: /screenshot/
+Allow: /og-image.jpg
+
+# Sitemap location
+Sitemap: https://if-you-invest-qqq.vercel.app/sitemap.xml
+
+# Crawl delay (optional, helps reduce server load)
+Crawl-delay: 1
+
+# Specific rules for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 2
+
+# Block aggressive crawlers
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
