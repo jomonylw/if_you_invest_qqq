@@ -1,12 +1,14 @@
 "use client";
 import React, { useState, useCallback } from "react"; // Added useCallback
-import { TextField, Button, Card, CardContent, Typography, CircularProgress, Alert, Box, Divider } from '@mui/material';
+import { TextField, Button, Card, CardContent, Typography, CircularProgress, Alert, Box, Divider, Tooltip, IconButton } from '@mui/material';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { format, parseISO } from 'date-fns';
 import type { InvestmentFormProps, CalApiParams } from '../types';
 import InvestmentResultsChart from './InvestmentResultsChart';
 import PriceChart from './PriceChart'; // Added PriceChart import
 import LoadingSpinner from './LoadingSpinner'; // Added LoadingSpinner import
+// import HowItWorks from "@/components/HowItWorks";
 
 export default function InvestmentForm({
   initialFormParams,
@@ -172,17 +174,28 @@ export default function InvestmentForm({
             mb: 2,
             backdropFilter: 'blur(10px)'
           }}>
-            <Typography variant="h6" sx={{
-              mb: 2,
-              fontWeight: 600,
-              color: 'primary.dark',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-              fontSize: { xs: '0.9rem', md: '1rem' }
-            }}>
-              📅 Investment Date Range
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 2 }}>
+              <Typography variant="h6" sx={{
+                fontWeight: 600,
+                color: 'primary.dark',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                fontSize: { xs: '0.9rem', md: '1rem' }
+              }}>
+                📅 Investment Date Range
+              </Typography>
+              <Tooltip
+                title="Select the start and end dates. The end date can be a future date. For future periods, the simulation will use the 'Predicted Annualized Return' to project growth."
+                arrow
+                placement="top"
+                enterTouchDelay={0}
+              >
+                <IconButton size="small" aria-label="info">
+                  <HelpOutlineIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
             <DatePicker
               label="Start Date"
@@ -225,17 +238,28 @@ export default function InvestmentForm({
             mb: 2,
             backdropFilter: 'blur(10px)'
           }}>
-            <Typography variant="h6" sx={{
-              mb: 2,
-              fontWeight: 600,
-              color: 'primary.dark',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-              fontSize: { xs: '0.9rem', md: '1rem' }
-            }}>
-              💵 Investment Amounts
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 2 }}>
+              <Typography variant="h6" sx={{
+                fontWeight: 600,
+                color: 'primary.dark',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                fontSize: { xs: '0.9rem', md: '1rem' }
+              }}>
+                💵 Investment Amounts
+              </Typography>
+              <Tooltip
+                title="Define your investment plan. 'Initial Investment' is the lump sum you start with. 'Monthly Investment' is the additional amount you contribute each month."
+                arrow
+                placement="top"
+                enterTouchDelay={0}
+              >
+                <IconButton size="small" aria-label="info">
+                  <HelpOutlineIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
               <TextField
                 label="Initial Investment"
@@ -300,17 +324,28 @@ export default function InvestmentForm({
             mb: 2,
             backdropFilter: 'blur(10px)'
           }}>
-            <Typography variant="h6" sx={{
-              mb: 2,
-              fontWeight: 600,
-              color: 'primary.dark',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-              fontSize: { xs: '0.9rem', md: '1rem' }
-            }}>
-              🎯 Predicted Annualized Return
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 2 }}>
+                <Typography variant="h6" sx={{
+                    fontWeight: 600,
+                    color: 'primary.dark',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    fontSize: { xs: '0.9rem', md: '1rem' }
+                }}>
+                    🎯 Predicted Annualized Return
+                </Typography>
+                <Tooltip
+                    title="This is the estimated annual growth rate used for future projections. You can select from historical averages or input a custom rate. Historical returns do not guarantee future performance."
+                    arrow
+                    placement="top"
+                    enterTouchDelay={0}
+                >
+                    <IconButton size="small" aria-label="info">
+                        <HelpOutlineIcon fontSize="small" />
+                    </IconButton>
+                </Tooltip>
+            </Box>
             {annualReturns ? (
               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 1, justifyContent: 'center' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -515,6 +550,7 @@ export default function InvestmentForm({
             }}>
               <InvestmentResultsChart results={apiResult} />
             </Box>
+            {/* <HowItWorks /> */}
           </Box>
         )}
       </CardContent>
